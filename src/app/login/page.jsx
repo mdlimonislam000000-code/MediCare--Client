@@ -1,0 +1,187 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import {
+  HiOutlineMail,
+  HiOutlineLockClosed,
+  HiOutlineEye,
+  HiOutlineEyeOff,
+} from "react-icons/hi";
+import { MdLocalHospital } from "react-icons/md";
+import { Button } from "@heroui/react";
+import { FcGoogle } from "react-icons/fc";
+import { authClient } from "@/lib/auth-client";
+
+const LoginPage = () => {
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (data) => {
+    setLoading(true);
+    setErrorMessage("");
+
+    await authClient.signIn.email(
+      {
+        email: data.email,
+        password: data.password,
+      },
+      {
+        onRequest: () => {
+          setLoading(true);
+        },
+        onSuccess: () => {
+          setLoading(false);
+          router.push("/");
+          router.refresh();
+        },
+        onError: (ctx) => {
+          setLoading(false);
+          setErrorMessage(ctx.error.message || "Invalid email or password");
+        },
+      }
+    );
+  };
+
+  const handleGoogleLogin = async () => {
+    console.log("Google Sign In clicked");
+  };
+
+  return (
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 mt-10">
+      <div className="max-w-md w-full bg-background/85 backdrop-blur-2xl border border-blue-500/20 rounded-3xl shadow-2xl p-8 sm:p-10 relative overflow-hidden">
+
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="text-center mb-8 relative z-10">
+          <div className="inline-flex bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white p-3.5 rounded-2xl shadow-lg shadow-blue-500/30 mb-3 items-center justify-center">
+            <MdLocalHospital className="text-3xl" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
+            Welcome{" "}
+            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              Back
+            </span>
+          </h1>
+          <p className="text-xs sm:text-sm text-foreground/60 mt-1">
+            Sign in to access your MediCare dashboard
+          </p>
+        </div>
+
+        {errorMessage && (
+          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-xs text-center font-medium relative z-10">
+            {errorMessage}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 relative z-10">
+   
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-foreground/70 mb-1.5">
+              Email Address
+            </label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-blue-600">
+                <HiOutlineMail className="text-lg" />
+              </span>
+              <input
+                type="email"
+                {...register("email", { required: "Email is required" })}
+                placeholder="write your email"
+                className="w-full pl-10 pr-4 py-3 bg-blue-500/5 border border-blue-500/20 rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
+              />
+            </div>
+            {errors.email && <span className="text-red-500 text-xs mt-1 block">{errors.email.message}</span>}
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-foreground/70">
+                Password
+              </label>
+            </div>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-blue-600">
+                <HiOutlineLockClosed className="text-lg" />
+              </span>
+              <input
+                type={showPassword ? "text" : "password"}
+                {...register("password", { required: "Password is required" })}
+                placeholder="••••••••"
+                className="w-full pl-10 pr-12 py-3 bg-blue-500/5 border border-blue-500/20 rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-foreground/60 hover:text-blue-600 transition cursor-pointer"
+              >
+                {showPassword ? (
+                  <HiOutlineEyeOff className="text-lg" />
+                ) : (
+                  <HiOutlineEye className="text-lg" />
+                )}
+              </button>
+            </div>
+            {errors.password && <span className="text-red-500 text-xs mt-1 block">{errors.password.message}</span>}
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full mt-2 py-3.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-95 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            {loading ? (
+              <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              "Sign In"
+            )}
+          </button>
+        </form>
+
+        <div className="flex items-center my-5 relative z-10">
+          <div className="flex-grow border-t border-blue-500/20"></div>
+          <span className="px-3 text-xs uppercase tracking-wider text-foreground/50 font-semibold">Or</span>
+          <div className="flex-grow border-t border-blue-500/20"></div>
+        </div>
+
+        <div className="relative z-10">
+          <Button
+            variant="bordered"
+            onPress={handleGoogleLogin}
+            className="w-full rounded-xl py-6 border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 text-foreground font-semibold flex items-center justify-center gap-2 transition cursor-pointer"
+          >
+            <FcGoogle className="text-xl" /> Sign in with Google
+          </Button>
+        </div>
+
+        <p className="text-center text-xs sm:text-sm text-foreground/70 mt-6 relative z-10">
+          Don't have an account?{" "}
+          <Link
+            href="/register"
+            className="font-bold text-blue-600 hover:underline"
+          >
+            Register here
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default LoginPage;
