@@ -16,7 +16,7 @@ import {
 
 const Footer = () => {
   return (
-    <footer className="bg-base-200 mt-10 text-base-content border-t border-base-300 pt-16 pb-8">
+    <footer className="bg-base-200  mt-10 text-base-content border-t border-base-300 pt-16 ">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
 
@@ -87,7 +87,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-1">
             <h3 className="text-sm font-bold uppercase tracking-wider text-base-content">Emergency Care</h3>
             <div className="card bg-error/10 border border-error/20 p-4 space-y-2 shadow-sm">
               <div className="flex items-center gap-2 text-error">
@@ -103,7 +103,7 @@ const Footer = () => {
 
         </div>
 
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-base-content/60 text-center sm:text-left">
+        <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-base-content/60 text-center sm:text-left">
           <p>&copy; {new Date().getFullYear()} MediCare Connect. All rights reserved.</p>
           <div className="flex gap-6">
             <a href="#privacy" className="hover:text-primary transition-colors">Privacy Policy</a>
