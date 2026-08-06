@@ -1,5 +1,6 @@
 import Banner from "@/components/Banner";
 import MeetOurDoctors from "@/components/MeetOurDoctors";
+import PatientReviews from "@/components/PatientReviews";
 import WhyChooseUs from "@/components/WhyChooseUs";
 import Image from "next/image";
 
@@ -9,6 +10,7 @@ export default function Home() {
      <Banner></Banner>
      <WhyChooseUs></WhyChooseUs>
      <MeetOurDoctors></MeetOurDoctors>
+     <PatientReviews></PatientReviews>
     </div>
   );
 }
