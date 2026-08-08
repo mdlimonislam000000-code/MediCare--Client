@@ -39,7 +39,7 @@ const WhyChooseUs = () => {
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           className="text-center max-w-2xl mx-auto space-y-4"
         >
           <span className="text-primary font-bold uppercase tracking-wider text-xs px-4 py-1.5 bg-primary/10 rounded-full border border-primary/20">
