@@ -2,24 +2,33 @@
 
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 import { HiOutlineDocumentText, HiPlus, HiTrash, HiCheckCircle, HiPencilAlt } from "react-icons/hi";
 import EditPrescription from "@/components/EditPrescription";
-
 
 const PrescriptionCabin = () => {
   const searchParams = useSearchParams();
 
+  
+  const urlDoctorId = searchParams.get("doctorId");
   const bookingId = searchParams.get("bookingId");
   const patientId = searchParams.get("patientId") || searchParams.get("userId") || "";
   
   const patientData = {
-    name: searchParams.get("name") ,
-    email: searchParams.get("email") ,
-    phone: searchParams.get("phone") ,
-    age: searchParams.get("age") ,
-    message: searchParams.get("message") ,
+    name: searchParams.get("name"),
+    email: searchParams.get("email"),
+    phone: searchParams.get("phone"),
+    age: searchParams.get("age"),
+    message: searchParams.get("message"),
     date: searchParams.get("date"),
   };
+
+
+  const { data: session } = authClient.useSession();
+  const loggedInDoctorId = session?.user?.id || session?.user?._id;
+  
+
+  const currentDoctorId = urlDoctorId || loggedInDoctorId;
 
   const [allPrescriptions, setAllPrescriptions] = useState([]);
   const [loadingPrescriptions, setLoadingPrescriptions] = useState(true);
@@ -30,7 +39,6 @@ const PrescriptionCabin = () => {
     { name: "", dose: "", duration: "" }
   ]);
   const [submitting, setSubmitting] = useState(false);
-
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [currentEditingRx, setCurrentEditingRx] = useState(null);
@@ -75,6 +83,7 @@ const PrescriptionCabin = () => {
     const prescriptionData = {
       bookingId: bookingId || "",
       patientId: patientId || "",
+      doctorId: currentDoctorId || "", // <--- এখানে ডক্টরের আইডি যুক্ত করা হলো
       patientEmail: patientData.email !== "N/A" ? patientData.email : "",
       patient: patientData,
       diagnosis,
@@ -106,13 +115,11 @@ const PrescriptionCabin = () => {
     }
   };
 
-
   const handleOpenEditModal = (rx) => {
     setCurrentEditingRx(rx);
     setIsEditOpen(true);
   };
 
-  
   const handleUpdatePrescription = async (updatedData, stopLoading) => {
     const rxId = updatedData._id || updatedData.id;
 
@@ -141,7 +148,15 @@ const PrescriptionCabin = () => {
     }
   };
 
-  const isAlreadyIssued = allPrescriptions.some(p => p.bookingId === bookingId);
+
+  const isAlreadyIssued = allPrescriptions.some(
+    (p) => p.bookingId === bookingId && (!p.doctorId || p.doctorId === currentDoctorId)
+  );
+
+
+  const doctorPrescriptions = allPrescriptions.filter(
+    (rx) => !currentDoctorId || rx.doctorId === currentDoctorId
+  );
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-8">
@@ -260,13 +275,13 @@ const PrescriptionCabin = () => {
         
         {loadingPrescriptions ? (
           <p className="text-zinc-500 text-center py-6">Loading records...</p>
-        ) : allPrescriptions.length === 0 ? (
+        ) : doctorPrescriptions.length === 0 ? (
           <div className="text-center py-8 bg-zinc-50 dark:bg-zinc-900 rounded-2xl border text-zinc-500">
             No prescription records found.
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {allPrescriptions.map((rx, idx) => (
+            {doctorPrescriptions.map((rx, idx) => (
               <div key={idx} className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-md border border-zinc-200 dark:border-zinc-800 space-y-4">
                 <div className="flex justify-between items-start border-b pb-3 dark:border-zinc-800">
                   <div>
@@ -319,7 +334,6 @@ const PrescriptionCabin = () => {
           </div>
         )}
       </div>
-
 
       <EditPrescription
         isOpen={isEditOpen}

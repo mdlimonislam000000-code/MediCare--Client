@@ -64,6 +64,7 @@ const AppointmentsInbox = () => {
             const queryParams = new URLSearchParams({
               bookingId: booking._id,
               patientId: booking.patientId || booking.userId || booking.patient || "",
+              doctorId: doctorUserId || "",
               name: booking.name || "N/A",
               email: booking.email || booking.patientEmail || "N/A",
               phone: booking.phone || "N/A",
