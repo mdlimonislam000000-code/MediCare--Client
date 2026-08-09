@@ -1,4 +1,5 @@
 'use client'
+
 import React from 'react';
 import Link from 'next/link';
 import { 
@@ -16,14 +17,18 @@ import {
 
 const Footer = () => {
   return (
-    <footer className="bg-base-200  mt-10 text-base-content border-t border-base-300 pt-16 ">
+    <footer className="bg-base-200 mt-10 text-base-content relative pt-16 overflow-hidden border-t border-base-300">
+      
+      {/* ফুটারের টপ বর্ডারে আকর্ষণীয় শাইনিং / গ্রেডিয়েন্ট অ্যানিমেশন */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent animate-pulse" />
+
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-base-300">
           
+          {/* ব্র্যান্ড ইনফো ও সোশ্যাল লিংক */}
           <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/" className="inline-block">
               <span className="text-2xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 MediCare Connect
               </span>
@@ -33,21 +38,46 @@ const Footer = () => {
             </p>
 
             <div className="flex items-center gap-3 pt-2">
-              <a href="https://facebook.com" target="_blank" rel="noreferrer" className="p-2.5 bg-base-100 hover:bg-primary hover:text-primary-content rounded-full shadow-sm transition-all duration-300">
+              <a 
+                href="https://facebook.com" 
+                target="_blank" 
+                rel="noreferrer" 
+                aria-label="Facebook"
+                className="p-2.5 bg-base-100 hover:bg-primary hover:text-primary-content rounded-full shadow-sm transition-all duration-300"
+              >
                 <FaFacebookF size={14} />
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noreferrer" className="p-2.5 bg-base-100 hover:bg-primary hover:text-primary-content rounded-full shadow-sm transition-all duration-300">
+              <a 
+                href="https://twitter.com" 
+                target="_blank" 
+                rel="noreferrer" 
+                aria-label="Twitter"
+                className="p-2.5 bg-base-100 hover:bg-primary hover:text-primary-content rounded-full shadow-sm transition-all duration-300"
+              >
                 <FaTwitter size={14} />
               </a>
-              <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="p-2.5 bg-base-100 hover:bg-primary hover:text-primary-content rounded-full shadow-sm transition-all duration-300">
+              <a 
+                href="https://linkedin.com" 
+                target="_blank" 
+                rel="noreferrer" 
+                aria-label="LinkedIn"
+                className="p-2.5 bg-base-100 hover:bg-primary hover:text-primary-content rounded-full shadow-sm transition-all duration-300"
+              >
                 <FaLinkedinIn size={14} />
               </a>
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="p-2.5 bg-base-100 hover:bg-primary hover:text-primary-content rounded-full shadow-sm transition-all duration-300">
+              <a 
+                href="https://instagram.com" 
+                target="_blank" 
+                rel="noreferrer" 
+                aria-label="Instagram"
+                className="p-2.5 bg-base-100 hover:bg-primary hover:text-primary-content rounded-full shadow-sm transition-all duration-300"
+              >
                 <FaInstagram size={14} />
               </a>
             </div>
           </div>
 
+          {/* কুইক লিংকস */}
           <div className="space-y-4">
             <h3 className="text-sm font-bold uppercase tracking-wider text-base-content">Quick Links</h3>
             <ul className="space-y-2.5 text-xs font-medium">
@@ -64,11 +94,12 @@ const Footer = () => {
                 <Link href="/contact" className="text-base-content/70 hover:text-primary transition-colors">Contact Us</Link>
               </li>
               <li>
-                <Link href="#" className="text-base-content/70 hover:text-primary transition-colors">Dashboard</Link>
+                <Link href="/dashboard" className="text-base-content/70 hover:text-primary transition-colors">Dashboard</Link>
               </li>
             </ul>
           </div>
 
+          {/* কন্টাক্ট ইনফো */}
           <div className="space-y-4">
             <h3 className="text-sm font-bold uppercase tracking-wider text-base-content">Contact Info</h3>
             <ul className="space-y-3 text-xs text-base-content/70">
@@ -87,7 +118,8 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="space-y-1">
+          {/* ইমারজেন্সি কেয়ার */}
+          <div className="space-y-4">
             <h3 className="text-sm font-bold uppercase tracking-wider text-base-content">Emergency Care</h3>
             <div className="card bg-error/10 border border-error/20 p-4 space-y-2 shadow-sm">
               <div className="flex items-center gap-2 text-error">
@@ -103,11 +135,12 @@ const Footer = () => {
 
         </div>
 
-        <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-base-content/60 text-center sm:text-left">
+        {/* কপিরাইট ও পলিসি সেকশন */}
+        <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-base-content/60 text-center sm:text-left">
           <p>&copy; {new Date().getFullYear()} MediCare Connect. All rights reserved.</p>
           <div className="flex gap-6">
-            <a href="#privacy" className="hover:text-primary transition-colors">Privacy Policy</a>
-            <a href="#terms" className="hover:text-primary transition-colors">Terms of Service</a>
+            <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
           </div>
         </div>
 
@@ -115,5 +148,7 @@ const Footer = () => {
     </footer>
   );
 };
+
+Footer.displayName = "Footer";
 
 export default Footer;

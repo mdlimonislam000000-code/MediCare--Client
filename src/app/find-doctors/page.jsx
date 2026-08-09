@@ -2,16 +2,18 @@
 
 import AllDoctorsCard from "@/components/AllDoctorsCard";
 import React, { useEffect, useState } from "react";
-import { FaSearch, FaSortAmountDown } from "react-icons/fa";
+import { FaSearch, FaSortAmountDown, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const FindDoctors = () => {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
   
-
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
   const [sortBy, setSortBy] = useState("");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6; 
 
   useEffect(() => {
     fetch("http://localhost:5000/api/doctor-posts")
@@ -26,30 +28,41 @@ const FindDoctors = () => {
       });
   }, []);
 
-
+  
   const filteredDoctors = doctors.filter((doc) => {
     const matchesName = doc.doctorName?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSpecialty = selectedSpecialty === "" || doc.specialty?.toLowerCase() === selectedSpecialty.toLowerCase();
     return matchesName && matchesSpecialty;
   });
 
-
+  
   const sortedDoctors = [...filteredDoctors].sort((a, b) => {
     if (sortBy === "fee-low") {
-      return (Number(a.consultationFee) ) - (Number(b.consultationFee) );
+      return (Number(a.consultationFee)) - (Number(b.consultationFee));
     } else if (sortBy === "fee-high") {
-      return (Number(b.consultationFee) ) - (Number(a.consultationFee) );
+      return (Number(b.consultationFee)) - (Number(a.consultationFee));
     } else if (sortBy === "experience") {
-      const expA = parseInt(a.experience) ;
-      const expB = parseInt(b.experience) ;
+      const expA = parseInt(a.experience) || 0;
+      const expB = parseInt(b.experience) || 0;
       return expB - expA;
     } else if (sortBy === "rating") {
-      const ratingA = Number(a.rating) ;
-      const ratingB = Number(b.rating) ;
+      const ratingA = Number(a.rating) || 0;
+      const ratingB = Number(b.rating) || 0;
       return ratingB - ratingA;
     }
     return 0;
   });
+
+  
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedSpecialty, sortBy]);
+
+
+  const totalPages = Math.ceil(sortedDoctors.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentDoctors = sortedDoctors.slice(indexOfFirstItem, indexOfLastItem);
 
   const specialties = [...new Set(doctors.map((doc) => doc.specialty).filter(Boolean))];
 
@@ -76,6 +89,7 @@ const FindDoctors = () => {
             Search experienced specialists, explore schedules and choose the right doctor for your healthcare needs.
           </p>
         </div>
+
 
         <div className="bg-white dark:bg-gray-900 p-5 rounded-3xl border border-slate-200 dark:border-gray-800 shadow-lg flex flex-col md:flex-row gap-4 items-center justify-between">
           
@@ -124,7 +138,8 @@ const FindDoctors = () => {
 
         </div>
 
-        {sortedDoctors.length === 0 ? (
+
+        {currentDoctors.length === 0 ? (
           <div className="text-center py-20 rounded-3xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 shadow-lg">
             <h2 className="text-xl font-semibold text-slate-600 dark:text-gray-300">
               No Doctor Found Matching Your Criteria
@@ -132,9 +147,47 @@ const FindDoctors = () => {
           </div>
         ) : (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {sortedDoctors.map((doc, index) => (
+            {currentDoctors.map((doc, index) => (
               <AllDoctorsCard key={doc._id || index} doc={doc} />
             ))}
+          </div>
+        )}
+
+
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 pt-6">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="p-3 rounded-xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 text-slate-700 dark:text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-gray-800 transition shadow-sm cursor-pointer"
+            >
+              <FaChevronLeft size={14} />
+            </button>
+
+            {[...Array(totalPages)].map((_, index) => {
+              const pageNumber = index + 1;
+              return (
+                <button
+                  key={pageNumber}
+                  onClick={() => setCurrentPage(pageNumber)}
+                  className={`w-10 h-10 rounded-xl font-semibold text-sm transition shadow-sm cursor-pointer ${
+                    currentPage === pageNumber
+                      ? "bg-indigo-600 text-white shadow-indigo-500/30"
+                      : "bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800"
+                  }`}
+                >
+                  {pageNumber}
+                </button>
+              );
+            })}
+
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="p-3 rounded-xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 text-slate-700 dark:text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-gray-800 transition shadow-sm cursor-pointer"
+            >
+              <FaChevronRight size={14} />
+            </button>
           </div>
         )}
 

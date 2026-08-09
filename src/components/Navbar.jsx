@@ -263,15 +263,6 @@ const Navbar = () => {
                     <span>Dashboard</span>
                   </Link>
 
-                  <Link
-                    href="/dashboard/profile"
-                    onClick={() => setDropdownOpen(false)}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-left text-xs font-semibold text-foreground/80 hover:text-blue-600 hover:bg-blue-500/10 rounded-lg transition cursor-pointer"
-                  >
-                    <HiOutlineUser className="text-base text-blue-600 shrink-0" />
-                    <span>Profile Settings</span>
-                  </Link>
-
                   <div className="h-[1px] bg-blue-500/20 my-1.5" />
 
                   <button
