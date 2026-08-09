@@ -165,7 +165,7 @@ const DashboardSideber = ({ isOpen, setIsOpen }) => {
 
   return (
     <>
-      {/* মোবাইলে ওপেন হলে ব্যাকগ্রাউন্ড ওভারলে */}
+    
       {isOpen && (
         <div 
           onClick={() => setIsOpen(false)}
@@ -173,14 +173,13 @@ const DashboardSideber = ({ isOpen, setIsOpen }) => {
         />
       )}
 
-      {/* মেইন সাইডবার */}
       <aside className={`w-64 h-screen border-r border-gray-200 dark:border-white/10 bg-white dark:bg-[#080c16] text-gray-900 dark:text-white flex flex-col justify-between fixed md:sticky top-0 z-50 shadow-xl md:shadow-sm transition-transform duration-300 ease-in-out ${
         isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
       }`}>
         <div>
           <div className="px-6 py-4 border-b border-gray-200 dark:border-white/10 flex items-center justify-between">
             <Logo />
-            {/* মোবাইল ক্লোজ বাটন */}
+
             <button 
               onClick={() => setIsOpen(false)}
               className="md:hidden p-1.5 text-gray-500 hover:text-red-500 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 cursor-pointer"
@@ -212,7 +211,19 @@ const DashboardSideber = ({ isOpen, setIsOpen }) => {
             )}
           </div>
 
-          <nav className="px-4 space-y-1.5 overflow-y-auto max-h-[calc(100vh-260px)]">
+          
+          <div className="px-4 pb-3">
+            <Link
+              href="/"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition w-full border border-gray-200 dark:border-white/10"
+            >
+              <FaArrowLeft className="text-sm shrink-0 text-pink-500" />
+              <span>Back to Site</span>
+            </Link>
+          </div>
+
+          <nav className="px-4 space-y-1.5 overflow-y-auto max-h-[calc(100vh-330px)]">
             {menuItems?.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -234,16 +245,7 @@ const DashboardSideber = ({ isOpen, setIsOpen }) => {
           </nav>
         </div>
 
-        <div className="p-4 border-t border-gray-200 dark:border-white/10 space-y-2">
-          <Link
-            href="/"
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition w-full"
-          >
-            <FaArrowLeft className="text-sm shrink-0" />
-            <span>Back to Site</span>
-          </Link>
-
+        <div className="p-4 border-t border-gray-200 dark:border-white/10">
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-red-500 hover:text-red-600 hover:bg-red-500/5 transition w-full cursor-pointer"
