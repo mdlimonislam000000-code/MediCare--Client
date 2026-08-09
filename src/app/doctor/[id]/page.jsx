@@ -3,13 +3,11 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
 const DoctorDetailsPage = async ({ params }) => {
-
   const { id } = await params;
 
-  const {token} = await auth.api.getToken({
+  const { token } = await auth.api.getToken({
     headers: await headers(),
   });
-
 
   console.log("Token:", token);
 
@@ -19,13 +17,19 @@ const DoctorDetailsPage = async ({ params }) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
     });
 
     if (res.ok) {
-      doctorData = await res.json();
+      const jsonResponse = await res.json();
+      
+      doctorData = jsonResponse.data || jsonResponse; 
+      
+      console.log("Fetched Doctor Data:", doctorData);
+    } else {
+      console.log("Failed to fetch, status:", res.status);
     }
   } catch (error) {
     console.error("Error fetching doctor data:", error);
@@ -33,7 +37,6 @@ const DoctorDetailsPage = async ({ params }) => {
 
   return (
     <div>
-
       <DoctorsDetails doctorData={doctorData} />
     </div>
   );

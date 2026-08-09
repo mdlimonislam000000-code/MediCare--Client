@@ -16,6 +16,7 @@ import BookingDoctor from "@/components/BookingDoctor";
 
 const DoctorsDetails = ({ doctorData }) => {
   const doctor = doctorData;
+  console.log(doctor , 'doctor')
 
   if (!doctor) {
     return (
