@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { HiOutlineDocumentText, HiPlus, HiTrash, HiCheckCircle, HiPencilAlt } from "react-icons/hi";
 import EditPrescription from "@/components/EditPrescription";
+import toast from "react-hot-toast";
 
 const PrescriptionCabin = () => {
   const searchParams = useSearchParams();
@@ -105,11 +106,11 @@ const PrescriptionCabin = () => {
         setMedicines([{ name: "", dose: "", duration: "" }]);
         fetchPrescriptions();
       } else {
-        alert("Failed to save prescription!");
+        toast.error("Failed to save prescription!");
       }
     } catch (error) {
       console.error("Error saving prescription:", error);
-      alert("Something went wrong!");
+      toast.error("Something went wrong!");
     } finally {
       setSubmitting(false);
     }
@@ -138,11 +139,11 @@ const PrescriptionCabin = () => {
         setIsEditOpen(false);
         fetchPrescriptions();
       } else {
-        alert("Failed to update prescription!");
+        toast.error("Failed to update prescription!");
       }
     } catch (error) {
       console.error("Error updating prescription:", error);
-      alert("Something went wrong during update!");
+      toast.error("Something went wrong during update!");
     } finally {
       stopLoading();
     }

@@ -12,6 +12,7 @@ import {
   Textarea 
 } from "@heroui/react";
 import { FiEdit3 } from "react-icons/fi";
+import toast from "react-hot-toast";
 
 const PaitentEditAppointmntCard = ({ appointment, onUpdateSuccess }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -43,9 +44,9 @@ const PaitentEditAppointmntCard = ({ appointment, onUpdateSuccess }) => {
         if (onUpdateSuccess) {
           onUpdateSuccess(id, editFormData);
         }
-        alert("Appointment updated successfully!");
+        toast.success("Appointment updated successfully!");
       } else {
-        alert("Failed to update or no changes made.");
+        toast.error("Failed to update or no changes made.");
       }
     } catch (error) {
       console.error("Failed to update appointment:", error);

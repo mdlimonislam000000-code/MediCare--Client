@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { FaTrash, FaBan } from "react-icons/fa";
 
 const ManageUser = () => {
@@ -33,7 +34,7 @@ const ManageUser = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.modifiedCount > 0) {
-          alert("Account suspended successfully!");
+          toast.remove("Account suspended successfully!");
           fetchUsers();
         }
       })
@@ -47,7 +48,7 @@ const ManageUser = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.modifiedCount > 0) {
-          alert("Account unsuspended successfully!");
+          toast.success("Account unsuspended successfully!");
           fetchUsers();
         }
       })
@@ -62,7 +63,7 @@ const ManageUser = () => {
         .then((res) => res.json())
         .then((data) => {
           if (data.deletedCount > 0) {
-            alert("Account deleted successfully!");
+            toast.dismiss("Account deleted successfully!");
             fetchUsers();
           }
         })

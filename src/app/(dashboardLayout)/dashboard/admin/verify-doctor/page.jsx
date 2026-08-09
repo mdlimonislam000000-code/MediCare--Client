@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { FaCheck, FaTrash, FaBan } from "react-icons/fa";
 
 const VerifyDoctor = () => {
@@ -33,7 +34,7 @@ const VerifyDoctor = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.modifiedCount > 0) {
-          alert("Post approved successfully!");
+          toast.success("Post approved successfully!");
           fetchPosts(); 
         }
       });
@@ -47,7 +48,7 @@ const VerifyDoctor = () => {
         .then((res) => res.json())
         .then((data) => {
           if (data.deletedCount > 0) {
-            alert("Post deleted successfully!");
+            toast.dismiss("Post deleted successfully!");
             fetchPosts();
           }
         });
@@ -61,7 +62,7 @@ const VerifyDoctor = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.modifiedCount > 0) {
-          alert("Post suspended!");
+          toast.error("Post suspended!");
           fetchPosts();
         }
       });

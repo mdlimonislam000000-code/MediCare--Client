@@ -12,6 +12,7 @@ import {
   HiOutlineX
 } from "react-icons/hi";
 import { Button } from "@heroui/react";
+import toast from "react-hot-toast";
 
 const PatientProfile = () => {
   const { data: session, isPending } = authClient.useSession();
@@ -52,15 +53,15 @@ const PatientProfile = () => {
       const data = await response.json();
 
       if (response.ok) {
-        alert("Profile updated successfully!");
+        toast.success("Profile updated successfully!");
         setIsEditOpen(false);
         window.location.reload(); 
       } else {
-        alert(data.message || "Failed to update profile.");
+        toast.error(data.message || "Failed to update profile.");
       }
     } catch (error) {
       console.error("Update failed:", error);
-      alert("Something went wrong. Failed to update profile.");
+      toast.error("Something went wrong. Failed to update profile.");
     } finally {
       setLoading(false);
     }
@@ -79,14 +80,14 @@ const PatientProfile = () => {
       });
 
       if (response.ok) {
-        alert("Account deleted successfully.");
+        toast.error("Account deleted successfully.");
         window.location.href = "/login";
       } else {
-        alert("Failed to delete account.");
+        toast.error("Failed to delete account.");
       }
     } catch (error) {
       console.error("Delete failed:", error);
-      alert("Something went wrong during deletion.");
+      toast.error("Something went wrong during deletion.");
     }
   };
 

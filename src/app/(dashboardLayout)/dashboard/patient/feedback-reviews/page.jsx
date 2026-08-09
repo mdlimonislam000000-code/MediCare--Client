@@ -7,6 +7,7 @@ import {
   FiCheckCircle,
   FiTrash2,
 } from "react-icons/fi";
+import toast from "react-hot-toast";
 
 const FeedbackReviews = () => {
   const { data: session, isPending } = authClient.useSession();
@@ -52,7 +53,7 @@ const FeedbackReviews = () => {
 
   const handleAddReview = async (doctorId) => {
     if (!comment) {
-      alert("Please write something for the review.");
+      toast.error("Please write something for the review.");
       return;
     }
 
@@ -73,14 +74,14 @@ const FeedbackReviews = () => {
       });
 
       if (res.ok) {
-        alert("Review added successfully!");
+        toast.success("Review added successfully!");
         setComment("");
         setRating(5);
         setActiveDoctorId(null);
         fetchReviews();
       } else {
         const data = await res.json();
-        alert(data.message || "Failed to add review");
+        toast.error(data.message || "Failed to add review");
       }
     } catch (err) {
       console.error("Error adding review:", err);

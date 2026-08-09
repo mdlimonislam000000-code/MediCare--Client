@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Button, Input, Label, Modal, Surface, TextField } from "@heroui/react";
 import { authClient } from "@/lib/auth-client"; 
+import toast from "react-hot-toast";
 
 const BookingDoctor = ({ doctor }) => {
   const [loading, setLoading] = useState(false);
@@ -42,7 +43,7 @@ const BookingDoctor = ({ doctor }) => {
     console.log("Submitting with Doctor User ID:", doctorUserId);
 
     if (!currentDoctorId) {
-      alert("Doctor ID is missing!");
+      toast.error("Doctor ID is missing!");
       return;
     }
 
@@ -73,12 +74,12 @@ const BookingDoctor = ({ doctor }) => {
       if (stripeData.url) {
         window.location.href = stripeData.url; 
       } else {
-        alert(stripeData.error || "Failed to redirect to payment gateway.");
+        toast.error(stripeData.error || "Failed to redirect to payment gateway.");
       }
 
     } catch (error) {
       console.error("Error submitting payment:", error);
-      alert("Something went wrong!");
+      toast.error("Something went wrong!");
     } finally {
       setLoading(false);
     }

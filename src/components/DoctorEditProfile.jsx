@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Surface } from "@heroui/react";
+import toast from "react-hot-toast";
 
 const DoctorEditProfile = ({ doctorData, user, onUpdateSuccess }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -92,7 +93,7 @@ const DoctorEditProfile = ({ doctorData, user, onUpdateSuccess }) => {
       const postResult = await postRes.json();
 
       if (userRes.ok || postRes.ok || userResult.acknowledged || postResult.acknowledged) {
-        alert("Profile updated successfully!");
+        toast.success("Profile updated successfully!");
         setIsOpen(false);
         if (onUpdateSuccess) {
           onUpdateSuccess();
@@ -100,11 +101,11 @@ const DoctorEditProfile = ({ doctorData, user, onUpdateSuccess }) => {
           window.location.reload();
         }
       } else {
-        alert("Failed to update profile. Please try again.");
+        toast.error("Failed to update profile. Please try again.");
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("An error occurred while updating profile.");
+      toast.error("An error occurred while updating profile.");
     } finally {
       setLoading(false);
     }
