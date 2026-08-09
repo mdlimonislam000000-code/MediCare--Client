@@ -14,15 +14,15 @@ export const auth = betterAuth({
   },
   socialProviders: {
     google: {
-      clientId: process.env.GOOGLE_CLIENT_ID || "placeholder-google-client-id",
+      clientId: process.env.GOOGLE_CLIENT_ID ,
       clientSecret:
-        process.env.GOOGLE_CLIENT_SECRET || "placeholder-google-client-secret",
+        process.env.GOOGLE_CLIENT_SECRET ,
     },
   },
   user: {
     additionalFields: {
       role: {
-        defaultValue: 'attendee'
+        defaultValue: 'patient'
       },
       ifBlocked: {
         defaultValue: false ,

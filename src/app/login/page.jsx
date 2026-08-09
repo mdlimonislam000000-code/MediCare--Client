@@ -19,6 +19,7 @@ const LoginPage = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const {
@@ -59,7 +60,32 @@ const LoginPage = () => {
   };
 
   const handleGoogleLogin = async () => {
-    console.log("Google Sign In clicked");
+    setGoogleLoading(true);
+    setErrorMessage("");
+
+    try {
+      await authClient.signIn.social(
+        {
+          provider: "google",
+          callbackURL: "/",
+        },
+        {
+          onRequest: () => {
+            setGoogleLoading(true);
+          },
+          onSuccess: () => {
+            setGoogleLoading(false);
+          },
+          onError: (ctx) => {
+            setGoogleLoading(false);
+            setErrorMessage(ctx.error.message || "Google sign in failed");
+          },
+        }
+      );
+    } catch (err) {
+      setGoogleLoading(false);
+      setErrorMessage("Something went wrong with Google sign in");
+    }
   };
 
   return (
@@ -164,9 +190,16 @@ const LoginPage = () => {
           <Button
             variant="bordered"
             onPress={handleGoogleLogin}
+            disabled={googleLoading}
             className="w-full rounded-xl py-6 border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 text-foreground font-semibold flex items-center justify-center gap-2 transition cursor-pointer"
           >
-            <FcGoogle className="text-xl" /> Sign in with Google
+            {googleLoading ? (
+              <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                <FcGoogle className="text-xl" /> Sign in with Google
+              </>
+            )}
           </Button>
         </div>
 
