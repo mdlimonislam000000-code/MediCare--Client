@@ -10,7 +10,6 @@ const Layout = ({ children }) => {
     return (
         <div className='min-h-screen flex container mx-auto bg-background text-foreground relative'>
             
-            {/* মোবাইল ডিভাইসের জন্য টপ হেডার বার */}
             <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-[#080c16] border-b border-gray-200 dark:border-white/10 px-4 flex items-center justify-between z-40">
                 <button
                     onClick={() => setIsSidebarOpen(true)}
@@ -22,13 +21,11 @@ const Layout = ({ children }) => {
                 <div className="w-8"></div>
             </div>
 
-            {/* সাইডবার কম্পোনেন্ট */}
             <DashboardSideber 
                 isOpen={isSidebarOpen} 
                 setIsOpen={setIsSidebarOpen} 
             />
 
-            {/* মেইন কন্টেন্ট */}
             <main className='flex-1 p-6 overflow-y-auto mt-16 md:mt-0'>
                 {children}
             </main>
