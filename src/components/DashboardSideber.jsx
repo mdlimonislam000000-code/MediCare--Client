@@ -20,10 +20,11 @@ import { GrSchedule } from "react-icons/gr";
 import { MdForwardToInbox, MdOutlineVerified } from "react-icons/md";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import { RiArrowRightCircleLine } from "react-icons/ri";
+import { IoClose } from "react-icons/io5";
 import toast from "react-hot-toast";
 import Logo from "./Logo";
 
-const DashboardSideber = () => {
+const DashboardSideber = ({ isOpen, setIsOpen }) => {
   const { data: session, isPending } = useSession();
   const user = session?.user;
   const pathname = usePathname();
@@ -163,11 +164,29 @@ const DashboardSideber = () => {
           : [];
 
   return (
-    <div>
-      <aside className="w-64 h-screen border-r border-gray-200 dark:border-white/10 bg-white dark:bg-[#080c16] text-gray-900 dark:text-white flex flex-col justify-between sticky top-0 shadow-sm">
+    <>
+      {/* মোবাইলে ওপেন হলে ব্যাকগ্রাউন্ড ওভারলে */}
+      {isOpen && (
+        <div 
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-xs transition-opacity"
+        />
+      )}
+
+      {/* মেইন সাইডবার */}
+      <aside className={`w-64 h-screen border-r border-gray-200 dark:border-white/10 bg-white dark:bg-[#080c16] text-gray-900 dark:text-white flex flex-col justify-between fixed md:sticky top-0 z-50 shadow-xl md:shadow-sm transition-transform duration-300 ease-in-out ${
+        isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+      }`}>
         <div>
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-white/10">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-white/10 flex items-center justify-between">
             <Logo />
+            {/* মোবাইল ক্লোজ বাটন */}
+            <button 
+              onClick={() => setIsOpen(false)}
+              className="md:hidden p-1.5 text-gray-500 hover:text-red-500 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 cursor-pointer"
+            >
+              <IoClose className="text-xl" />
+            </button>
           </div>
 
           <div className="p-6">
@@ -193,13 +212,14 @@ const DashboardSideber = () => {
             )}
           </div>
 
-          <nav className="px-4 space-y-1.5">
+          <nav className="px-4 space-y-1.5 overflow-y-auto max-h-[calc(100vh-260px)]">
             {menuItems?.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.key}
                   href={item.href}
+                  onClick={() => setIsOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold transition ${
                     isActive
                       ? "bg-pink-500/10 text-pink-500 border border-pink-500/20"
@@ -217,6 +237,7 @@ const DashboardSideber = () => {
         <div className="p-4 border-t border-gray-200 dark:border-white/10 space-y-2">
           <Link
             href="/"
+            onClick={() => setIsOpen(false)}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition w-full"
           >
             <FaArrowLeft className="text-sm shrink-0" />
@@ -232,7 +253,7 @@ const DashboardSideber = () => {
           </button>
         </div>
       </aside>
-    </div>
+    </>
   );
 };
 
