@@ -28,14 +28,12 @@ const FindDoctors = () => {
       });
   }, []);
 
-  
   const filteredDoctors = doctors.filter((doc) => {
     const matchesName = doc.doctorName?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSpecialty = selectedSpecialty === "" || doc.specialty?.toLowerCase() === selectedSpecialty.toLowerCase();
     return matchesName && matchesSpecialty;
   });
 
-  
   const sortedDoctors = [...filteredDoctors].sort((a, b) => {
     if (sortBy === "fee-low") {
       return (Number(a.consultationFee)) - (Number(b.consultationFee));
@@ -53,11 +51,9 @@ const FindDoctors = () => {
     return 0;
   });
 
-  
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, selectedSpecialty, sortBy]);
-
 
   const totalPages = Math.ceil(sortedDoctors.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -80,7 +76,6 @@ const FindDoctors = () => {
     <section className="min-h-screen bg-slate-50 dark:bg-[#030712] py-16 px-5 transition-colors duration-500">
       <div className="max-w-7xl mx-auto space-y-10">
         
-
         <div className="text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white">
             Find Your Doctor
@@ -89,7 +84,6 @@ const FindDoctors = () => {
             Search experienced specialists, explore schedules and choose the right doctor for your healthcare needs.
           </p>
         </div>
-
 
         <div className="bg-white dark:bg-gray-900 p-5 rounded-3xl border border-slate-200 dark:border-gray-800 shadow-lg flex flex-col md:flex-row gap-4 items-center justify-between">
           
@@ -138,7 +132,6 @@ const FindDoctors = () => {
 
         </div>
 
-
         {currentDoctors.length === 0 ? (
           <div className="text-center py-20 rounded-3xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 shadow-lg">
             <h2 className="text-xl font-semibold text-slate-600 dark:text-gray-300">
@@ -148,11 +141,12 @@ const FindDoctors = () => {
         ) : (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {currentDoctors.map((doc, index) => (
-              <AllDoctorsCard key={doc._id || index} doc={doc} />
+              <div key={doc._id || index} className="bg-white dark:bg-gray-900 p-5 rounded-3xl border border-slate-200 dark:border-gray-800 shadow-lg flex flex-col justify-between">
+                <AllDoctorsCard doc={doc} />
+              </div>
             ))}
           </div>
         )}
-
 
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-2 pt-6">

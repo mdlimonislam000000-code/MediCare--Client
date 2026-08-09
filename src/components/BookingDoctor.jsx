@@ -32,6 +32,7 @@ const BookingDoctor = ({ doctor }) => {
   };
 
   const handleBookingSubmit = async (e) => {
+    
     e.preventDefault();
 
     const currentDoctorId = doctor?._id || doctor?.id;
