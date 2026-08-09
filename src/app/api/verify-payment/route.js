@@ -1,3 +1,5 @@
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -34,10 +36,16 @@ export async function GET(request) {
         transactionId: session.payment_intent,
       };
 
+       const { token } = await auth.api.getToken({
+          headers: await headers(),
+        });
+      console.log(token, 'booking token')
+
       const backendRes = await fetch("http://localhost:5000/api/bookings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(paymentData),
       });

@@ -47,42 +47,45 @@ const DoctorPost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    try {
-      const response = await fetch('http://localhost:5000/api/doctor-posts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData), 
-      });
-      
-      const result = await response.json();
-      if (result.insertedId) {
-        toast.success('Doctor profile & post saved successfully!');
 
-        const currentUserId = user?.id ;
-        setFormData({
-          userId: currentUserId ,
-          doctorName: user?.name ,
-          email: user?.email ,
-          phone: '',
-          specialty: '',
-          qualifications: '',
-          experience: '',
-          consultationFee: '',
-          chamberAddress: '',
-          hospitalName: '',
-          sessionType: 'Morning',
-          startTime: '',
-          endTime: '',
-          title: '',
-          category: '',
-          content: ''
-        });
-      }
-    } catch (error) {
-      console.error('Error submitting post:', error);
+    const { data: tokenData } = await authClient.token();
+    const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
+    
+    const response = await fetch('http://localhost:5000/api/doctor-posts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(formData), 
+    });
+    
+    const result = await response.json();
+    
+    if (result.insertedId) {
+      toast.success('Doctor profile & post saved successfully!');
+
+      const currentUserId = user?.id || user?._id;
+      setFormData({
+        userId: currentUserId,
+        doctorName: user?.name || '',
+        email: user?.email || '',
+        imageUrl: user?.image || '',
+        phone: '',
+        specialty: '',
+        qualifications: '',
+        experience: '',
+        consultationFee: '',
+        chamberAddress: '',
+        hospitalName: '',
+        sessionType: 'Morning',
+        startTime: '',
+        endTime: '',
+        title: '',
+        category: '',
+        content: ''
+      });
+    } else {
       toast.error('Failed to submit post.');
     }
   };

@@ -27,7 +27,7 @@ const FeedbackReviews = () => {
 
   useEffect(() => {
     if (userId) {
-      fetch(`http://localhost:5000/api/bookings/user-id/${userId}`)
+      fetch(`http://localhost:5000/api/bookings/user/${userId}`)
         .then((res) => res.json())
         .then((data) => {
           const items = Array.isArray(data) ? data : data.result || [];

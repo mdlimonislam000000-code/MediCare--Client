@@ -9,7 +9,7 @@ const DoctorDetailsPage = async ({ params }) => {
     headers: await headers(),
   });
 
-  console.log("Token:", token);
+  // console.log("Token:", token);
 
   let doctorData = null;
   try {

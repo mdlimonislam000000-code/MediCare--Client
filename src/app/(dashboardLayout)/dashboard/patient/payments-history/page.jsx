@@ -14,7 +14,7 @@ const PaymentsHistory = () => {
   useEffect(() => {
     if (!userId) return;
 
-    fetch(`http://localhost:5000/api/bookings/user-id/${userId}`)
+    fetch(`http://localhost:5000/api/bookings/user/${userId}`)
       .then((res) => res.json())
       .then((data) => {
         setPayments(data);

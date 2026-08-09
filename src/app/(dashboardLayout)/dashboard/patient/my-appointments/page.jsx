@@ -58,7 +58,7 @@ const AppointmentsContent = () => {
   const fetchAppointments = async (currentUserId) => {
     try {
       setLoadingAppointments(true);
-      const res = await fetch(`http://localhost:5000/api/bookings/user-id/${currentUserId}`);
+      const res = await fetch(`http://localhost:5000/api/bookings/user/${currentUserId}`);
       const data = await res.json();
       
       if (Array.isArray(data)) {

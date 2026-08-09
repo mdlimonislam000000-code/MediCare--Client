@@ -32,7 +32,7 @@ const ViewPrescription = ({ prescriptionData }) => {
                 <div>
                   <Modal.Heading className="text-lg font-bold text-zinc-100">Prescription Details</Modal.Heading>
                   <p className="text-xs text-zinc-400 font-normal mt-0.5">
-                    Booking ID: <span className="text-zinc-300 font-mono">{prescriptionData?.bookingId || "N/A"}</span>
+                    Booking ID: <span className="text-zinc-300 font-mono">{prescriptionData?.bookingId }</span>
                   </p>
                 </div>
               </div>
