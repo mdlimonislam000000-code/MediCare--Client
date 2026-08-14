@@ -45,10 +45,12 @@ const AdminProfile = () => {
                 return;
             }
 
+            const {data:tokenData} = await authClient.token()
             const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
+                    authorization : `Bearer ${tokenData?.token}`
                 },
                 body: JSON.stringify({
                     name,

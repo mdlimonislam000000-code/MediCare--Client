@@ -1,5 +1,6 @@
 "use client";
 
+import { authClient } from "@/lib/auth-client";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FaTrash, FaBan } from "react-icons/fa";
@@ -8,6 +9,21 @@ const ManageUser = () => {
   const [activeTab, setActiveTab] = useState("doctor"); 
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(null);
+
+  // টোকেন ফেচ করার সঠিক পদ্ধতি
+  useEffect(() => {
+    async function getToken() {
+      try {
+        const sessionToken = await authClient.token();
+        const extractedToken = sessionToken?.data || sessionToken;
+        setToken(extractedToken);
+      } catch (err) {
+        console.error("Error fetching auth token:", err);
+      }
+    }
+    getToken();
+  }, []);
 
   const fetchUsers = () => {
     setLoading(true);
@@ -28,46 +44,88 @@ const ManageUser = () => {
   }, [activeTab]);
 
   const handleSuspend = (id) => {
+    if (!token) {
+      toast.error("Auth token not found. Please login again.");
+      return;
+    }
+
     fetch(`http://localhost:5000/api/users/suspend/${id}`, {
       method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.modifiedCount > 0) {
-          toast.remove("Account suspended successfully!");
+        if (data.modifiedCount > 0 || data.success) {
+          toast.success("Account suspended successfully!");
           fetchUsers();
+        } else {
+          toast.error("Failed to suspend account.");
         }
       })
-      .catch((err) => console.error("Error suspending account:", err));
+      .catch((err) => {
+        console.error("Error suspending account:", err);
+        toast.error("Something went wrong!");
+      });
   };
 
   const handleUnsuspend = (id) => {
+    if (!token) {
+      toast.error("Auth token not found. Please login again.");
+      return;
+    }
+
     fetch(`http://localhost:5000/api/users/unsuspend/${id}`, {
       method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.modifiedCount > 0) {
+        if (data.modifiedCount > 0 || data.success) {
           toast.success("Account unsuspended successfully!");
           fetchUsers();
+        } else {
+          toast.error("Failed to unsuspend account.");
         }
       })
-      .catch((err) => console.error("Error unsuspending account:", err));
+      .catch((err) => {
+        console.error("Error unsuspending account:", err);
+        toast.error("Something went wrong!");
+      });
   };
 
   const handleDelete = (id) => {
+    if (!token) {
+      toast.error("Auth token not found. Please login again.");
+      return;
+    }
+
     if (window.confirm(`Are you sure you want to delete this ${activeTab} account?`)) {
       fetch(`http://localhost:5000/api/users/${id}`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       })
         .then((res) => res.json())
         .then((data) => {
-          if (data.deletedCount > 0) {
-            toast.dismiss("Account deleted successfully!");
+          if (data.deletedCount > 0 || data.success) {
+            toast.success("Account deleted successfully!");
             fetchUsers();
+          } else {
+            toast.error("Failed to delete account.");
           }
         })
-        .catch((err) => console.error("Error deleting account:", err));
+        .catch((err) => {
+          console.error("Error deleting account:", err);
+          toast.error("Something went wrong!");
+        });
     }
   };
 
@@ -176,7 +234,8 @@ const ManageUser = () => {
                           title="Delete Account"
                           className="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-rose-600 hover:bg-rose-100 transition"
                         >
-                          <FaTrash size={14} />
+                          <FaTrash size=
+                          {14} />
                         </button>
                       </div>
                     </td>
