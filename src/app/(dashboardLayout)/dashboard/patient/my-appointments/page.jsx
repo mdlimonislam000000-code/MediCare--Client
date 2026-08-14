@@ -21,12 +21,11 @@ const AppointmentsContent = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [loadingAppointments, setLoadingAppointments] = useState(true);
 
-
   useEffect(() => {
     if (success === "true" && sessionId && !saved) {
       const saveBookingToDB = async () => {
         try {
-          setSaving(s => true);
+          setSaving(true);
           const { data: tokenData } = await authClient.token();
           const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
 
@@ -54,7 +53,6 @@ const AppointmentsContent = () => {
     }
   }, [success, sessionId, saved, userId]);
 
-
   const fetchPrescriptions = async () => {
     try {
       const { data: tokenData } = await authClient.token();
@@ -73,7 +71,6 @@ const AppointmentsContent = () => {
       console.error("Failed to fetch prescriptions:", error);
     }
   };
-
 
   const fetchAppointments = async (currentUserId) => {
     try {
@@ -107,7 +104,6 @@ const AppointmentsContent = () => {
     }
   }, [userId]);
 
-
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this appointment?")) {
       try {
@@ -138,12 +134,12 @@ const AppointmentsContent = () => {
   return (
     <div className="p-8 max-w-5xl mx-auto relative">
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-zinc-100 tracking-tight">Patient Dashboard</h1>
-        <p className="text-sm text-zinc-400 mt-1">Manage your medical appointments and view doctor's prescriptions seamlessly.</p>
+        <h1 className="text-3xl font-extrabold text-base-content tracking-tight">Patient Dashboard</h1>
+        <p className="text-sm text-base-content/60 mt-1">Manage your medical appointments and view doctor's prescriptions seamlessly.</p>
       </div>
       
       {success === "true" && (
-        <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-2xl shadow-lg flex items-center gap-3">
+        <div className="mb-6 p-4 bg-success/10 border border-success/25 text-success rounded-2xl shadow-lg flex items-center gap-3">
           <span className="text-2xl">🎉</span>
           <div>
             <p className="font-semibold text-sm">
@@ -154,15 +150,15 @@ const AppointmentsContent = () => {
       )}
 
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-zinc-200">My Appointments</h2>
-        <span className="text-xs bg-zinc-800 text-zinc-400 px-3 py-1.5 rounded-full border border-zinc-700">
+        <h2 className="text-xl font-bold text-base-content">My Appointments</h2>
+        <span className="text-xs bg-base-200 text-base-content/70 px-3 py-1.5 rounded-full border border-base-300">
           Total: {appointments.length}
         </span>
       </div>
       
       <div className="grid gap-5">
         {loadingAppointments ? (
-          <div className="p-12 text-center text-zinc-500 bg-zinc-900/40 rounded-2xl border border-zinc-800 animate-pulse">
+          <div className="p-12 text-center text-base-content/50 bg-base-200/50 rounded-2xl border border-base-300 animate-pulse">
             Loading appointments...
           </div>
         ) : appointments.length > 0 ? (
@@ -181,28 +177,28 @@ const AppointmentsContent = () => {
             return (
               <div 
                 key={itemId}
-                className="bg-zinc-900/80 border border-zinc-800/80 hover:border-zinc-700/80 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-5 transition-all duration-300"
+                className="bg-base-100 border border-base-200 hover:border-base-300 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-5 transition-all duration-300"
               >
                 <div className="space-y-2.5">
                   <div className="flex items-center gap-2.5">
-                    <span className="px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-semibold rounded-full uppercase tracking-wider">
+                    <span className="px-3 py-1 bg-primary/10 text-primary border border-primary/20 text-xs font-semibold rounded-full uppercase tracking-wider">
                       Confirmed
                     </span>
                     {matchedPrescription && (
-                      <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold rounded-full uppercase tracking-wider flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <span className="px-3 py-1 bg-success/10 text-success border border-success/20 text-xs font-semibold rounded-full uppercase tracking-wider flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>
                         Prescription Issued
                       </span>
                     )}
                   </div>
                   
-                  <h3 className="text-xl font-bold text-zinc-100 flex items-center gap-2">
-                    <span className="text-indigo-400 font-normal text-base">Dr.</span> {item.doctorName || "Doctor"}
+                  <h3 className="text-xl font-bold text-base-content flex items-center gap-2">
+                    <span className="text-primary font-normal text-base">Dr.</span> {item.doctorName || "Doctor"}
                   </h3>
                   
-                  <p className="text-sm text-zinc-400 flex items-center gap-2">
-                    <FiUser className="text-zinc-500" />
-                    Patient: <span className="font-medium text-zinc-200">{item.name}</span> <span className="text-zinc-500">({item.phone})</span>
+                  <p className="text-sm text-base-content/60 flex items-center gap-2">
+                    <FiUser className="text-base-content/40" />
+                    Patient: <span className="font-medium text-base-content">{item.name}</span> <span className="text-base-content/40">({item.phone})</span>
                   </p>
                 </div>
 
@@ -212,7 +208,7 @@ const AppointmentsContent = () => {
                   ) : (
                     <button 
                       onClick={() => handleDelete(item._id || item.id)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl hover:bg-rose-500/20 transition-all shadow-sm cursor-pointer"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium bg-error/10 text-error border border-error/20 rounded-xl hover:bg-error/20 transition-all shadow-sm cursor-pointer"
                     >
                       <FiTrash2 className="text-base" /> 
                       Delete
@@ -223,7 +219,7 @@ const AppointmentsContent = () => {
             );
           })
         ) : (
-          <div className="p-12 text-center bg-zinc-900/40 border border-dashed border-zinc-800 rounded-2xl text-zinc-500">
+          <div className="p-12 text-center bg-base-200/40 border border-dashed border-base-300 rounded-2xl text-base-content/50">
             No appointments found.
           </div>
         )}
@@ -234,7 +230,7 @@ const AppointmentsContent = () => {
 
 const MyAppointments = () => {
   return (
-    <Suspense fallback={<div className="text-center py-10 text-zinc-400">Loading dashboard...</div>}>
+    <Suspense fallback={<div className="text-center py-10 text-base-content/60">Loading dashboard...</div>}>
       <AppointmentsContent />
     </Suspense>
   );

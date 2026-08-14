@@ -45,11 +45,9 @@ const PatientProfile = () => {
     setLoading(true);
 
     try {
-      // Better Auth এর বিল্ট-ইন আপডেট মেথড (এটি ডাটাবেজ এবং সেশন কুকি একসাথে আপডেট করবে)
       const { data, error } = await authClient.updateUser({
         name,
         image,
-        // email পরিবর্তন করতে চাইলে এখানে দিতে পারেন (যদি ব্যাকএন্ড এলাউ করে)
       }, {
         onRequest: () => {
           setLoading(true);
@@ -58,7 +56,6 @@ const PatientProfile = () => {
           toast.success("Profile updated successfully!");
           setIsEditOpen(false);
           setLoading(false);
-          // আলাদা করে রিলোড বা ফেচ করার দরকার নেই, UI অটো আপডেট হয়ে যাবে
         },
         onError: (ctx) => {
           toast.error(ctx.error.message || "Failed to update profile.");
@@ -110,7 +107,7 @@ const PatientProfile = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="card bg-base-100 shadow-xl border border-base-200 p-6 text-center h-fit">
           <div className="avatar placeholder mb-4 mx-auto">
-            <div className="bg-primary text-primary-content rounded-full w-24 h-24 text-3xl font-bold uppercase overflow-hidden">
+            <div className="bg-gradient-to-tr from-indigo-500 to-purple-500 text-white rounded-full w-24 h-24 text-3xl font-bold uppercase overflow-hidden shadow-lg">
               {user?.image ? (
                 <img src={user.image} alt={user?.name || "Patient"} className="w-full h-full object-cover" />
               ) : (
@@ -122,7 +119,7 @@ const PatientProfile = () => {
           <p className="text-sm text-base-content/60 mt-1">{user?.email || "patient@example.com"}</p>
           <div className="divider my-4"></div>
           
-          <div className="badge badge-primary badge-outline font-medium px-4 py-3 mb-4">
+          <div className="badge bg-indigo-500/10 text-indigo-500 border-indigo-500/20 font-medium px-4 py-3 mb-4">
             Role : {user?.role || "Patient"}
           </div>
           
@@ -134,14 +131,14 @@ const PatientProfile = () => {
                 setImage(user?.image || "");
                 setIsEditOpen(true);
               }} 
-              className="btn btn-primary btn-sm w-full font-medium flex items-center justify-center gap-2"
+              className="w-full font-semibold py-2.5 px-4 rounded-xl text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:opacity-95 shadow-lg shadow-indigo-500/25 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer border-0"
             >
               <HiOutlinePencilAlt className="text-lg" /> Edit Profile
             </Button>
             <Button 
               variant="danger" 
               onClick={handleDeleteAccount} 
-              className="btn btn-outline btn-sm w-full font-medium flex items-center justify-center gap-2 text-error border-error hover:bg-error hover:text-error-content"
+              className="w-full font-semibold py-2.5 px-4 rounded-xl text-rose-500 bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/30 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-sm"
             >
               <HiOutlineTrash className="text-lg" /> Delete Account
             </Button>
@@ -150,27 +147,27 @@ const PatientProfile = () => {
 
         <div className="card bg-base-100 shadow-xl border border-base-200 p-6 md:col-span-2">
           <h3 className="text-lg font-bold text-base-content mb-6 flex items-center gap-2">
-            <HiOutlineUser className="text-primary text-xl" /> Personal Information
+            <HiOutlineUser className="text-indigo-500 text-xl" /> Personal Information
           </h3>
 
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row justify-between border-b border-base-200 pb-4">
               <span className="text-sm text-base-content/60 flex items-center gap-2">
-                <HiOutlineUser /> Full Name
+                <HiOutlineUser className="text-indigo-400" /> Full Name
               </span>
               <span className="font-semibold text-base-content mt-1 sm:mt-0">{user?.name || "N/A"}</span>
             </div>
 
             <div className="flex flex-col sm:flex-row justify-between border-b border-base-200 pb-4">
               <span className="text-sm text-base-content/60 flex items-center gap-2">
-                <HiOutlineMail /> Email Address
+                <HiOutlineMail className="text-indigo-400" /> Email Address
               </span>
               <span className="font-semibold text-base-content mt-1 sm:mt-0">{user?.email || "N/A"}</span>
             </div>
 
             <div className="flex flex-col sm:flex-row justify-between border-b border-base-200 pb-4">
               <span className="text-sm text-base-content/60 flex items-center gap-2">
-                <HiOutlineShieldCheck /> Status
+                <HiOutlineShieldCheck className="text-indigo-400" /> Status
               </span>
               <span className="font-semibold text-base-content mt-1 sm:mt-0 capitalize">
                 {user?.status || "Active"}
@@ -179,14 +176,14 @@ const PatientProfile = () => {
 
             <div className="flex flex-col sm:flex-row justify-between border-b border-base-200 pb-4">
               <span className="text-sm text-base-content/60 flex items-center gap-2">
-                <HiOutlineLocationMarker /> Address
+                <HiOutlineLocationMarker className="text-indigo-400" /> Address
               </span>
               <span className="font-semibold text-base-content mt-1 sm:mt-0">{user?.address || "Dhaka, Bangladesh"}</span>
             </div>
 
             <div className="flex flex-col sm:flex-row justify-between pb-2">
               <span className="text-sm text-base-content/60 flex items-center gap-2">
-                <HiOutlineCalendar /> Account Created
+                <HiOutlineCalendar className="text-indigo-400" /> Account Created
               </span>
               <span className="font-semibold text-base-content mt-1 sm:mt-0">
                 {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}
@@ -196,14 +193,16 @@ const PatientProfile = () => {
         </div>
       </div>
 
+      {/* Edit Profile Modal */}
       {isEditOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-base-100 rounded-2xl shadow-2xl border border-base-200 w-full max-w-md p-6 relative space-y-4 animate-in fade-in zoom-in duration-200">
-            <div className="flex justify-between items-center border-b border-base-200 pb-3">
-              <h3 className="text-lg font-bold text-base-content">Edit Profile</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-gray-900 text-white rounded-2xl shadow-2xl border border-gray-700 w-full max-w-md p-6 relative space-y-4 animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center border-b border-gray-700 pb-3">
+              <h3 className="text-lg font-bold text-white">Edit Profile</h3>
               <button 
+                type="button"
                 onClick={() => setIsEditOpen(false)}
-                className="btn btn-sm btn-ghost btn-circle text-base-content/60 hover:text-base-content"
+                className="btn btn-sm btn-ghost btn-circle text-gray-300 hover:text-white hover:bg-gray-800"
               >
                 <HiOutlineX className="text-xl" />
               </button>
@@ -211,49 +210,49 @@ const PatientProfile = () => {
 
             <form onSubmit={handleUpdateProfile} className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-base-content/70 block mb-1">Full Name</label>
+                <label className="text-xs font-semibold text-gray-300 block mb-1">Full Name</label>
                 <input 
                   type="text" 
                   value={name} 
                   onChange={(e) => setName(e.target.value)} 
-                  className="input input-bordered w-full text-sm" 
+                  className="input input-bordered w-full text-sm bg-gray-800 text-white border-gray-600 focus:border-indigo-500" 
                   required 
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-base-content/70 block mb-1">Email Address</label>
+                <label className="text-xs font-semibold text-gray-300 block mb-1">Email Address</label>
                 <input 
                   type="email" 
                   value={email} 
                   onChange={(e) => setEmail(e.target.value)} 
-                  className="input input-bordered w-full text-sm" 
+                  className="input input-bordered w-full text-sm bg-gray-800 text-gray-400 border-gray-600 cursor-not-allowed" 
                   disabled 
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-base-content/70 block mb-1">Profile Image URL</label>
+                <label className="text-xs font-semibold text-gray-300 block mb-1">Profile Image URL</label>
                 <input 
                   type="url" 
                   value={image} 
                   onChange={(e) => setImage(e.target.value)} 
-                  className="input input-bordered w-full text-sm" 
+                  className="input input-bordered w-full text-sm bg-gray-800 text-white border-gray-600 focus:border-indigo-500" 
                   placeholder="Paste image link here" 
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-base-200">
+              <div className="flex justify-end gap-2 pt-3 border-t border-gray-700">
                 <button 
                   type="button" 
                   onClick={() => setIsEditOpen(false)} 
-                  className="btn btn-ghost btn-sm"
+                  className="px-4 py-2 rounded-xl text-sm font-medium text-gray-300 hover:bg-gray-800 transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit" 
-                  className="btn btn-primary btn-sm" 
+                  className="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-95 shadow-md shadow-indigo-500/25 transition cursor-pointer" 
                   disabled={loading}
                 >
                   {loading ? "Saving..." : "Save Changes"}

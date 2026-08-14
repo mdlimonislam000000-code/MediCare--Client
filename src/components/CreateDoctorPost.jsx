@@ -33,9 +33,9 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
             setFormData((prev) => ({
                 ...prev,
                 userId: currentUserId,
-                doctorName: user.name,
-                email: user.email,
-                imageUrl: user.image
+                doctorName: user.name || '',
+                email: user.email || '',
+                imageUrl: user.image || ''
             }));
         }
     }, [user]);
@@ -66,7 +66,6 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
             if (response.ok || result.insertedId || result.success) {
                 toast.success('Doctor profile & post saved successfully!');
                 
-                // ফর্ম রিসেট করা
                 const currentUserId = user?.id || user?._id;
                 setFormData({
                     userId: currentUserId || '',
@@ -88,7 +87,6 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
                     content: ''
                 });
 
-                // মডাল বন্ধ করা বা ডেটা রিফেচ করার জন্য প্যারেন্ট ফাংশন কল করা
                 if (onPostSuccess) {
                     onPostSuccess();
                 }
@@ -102,27 +100,27 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
     };
 
     return (
-        <div className="text-gray-100">
-            <div className="mb-6 pb-4 border-b border-gray-800">
-                <h2 className="text-2xl font-extrabold tracking-tight text-white">Doctor Details & Post Form</h2>
-                <p className="text-xs text-gray-400 mt-1">Add professional info, schedule slots, and medical insights.</p>
+        <div className="text-base-content bg-base-100 p-2">
+            <div className="mb-6 pb-4 border-b border-base-300">
+                <h2 className="text-2xl font-extrabold tracking-tight text-base-content">Doctor Details & Post Form</h2>
+                <p className="text-xs text-base-content font-medium opacity-80 mt-1">Add professional info, schedule slots, and medical insights.</p>
             </div>
             
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-300 mb-2">Doctor's Name (From Session)</label>
+                        <label className="block text-sm font-semibold text-base-content mb-2">Doctor's Name (From Session)</label>
                         <input
                             type="text"
                             name="doctorName"
                             value={formData.doctorName}
                             readOnly
-                            className="w-full px-4 py-3 bg-gray-800/60 border border-gray-700 rounded-xl text-gray-400 cursor-not-allowed focus:outline-none"
+                            className="w-full px-4 py-3 bg-base-200 border border-base-300 rounded-xl text-base-content opacity-70 cursor-not-allowed focus:outline-none"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-300 mb-2">Specialty</label>
+                        <label className="block text-sm font-semibold text-base-content mb-2">Specialty</label>
                         <input
                             type="text"
                             name="specialty"
@@ -130,25 +128,25 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
                             onChange={handleChange}
                             required
                             placeholder="e.g. Cardiologist"
-                            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
+                            className="w-full px-4 py-3 bg-base-200 border border-base-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-base-content placeholder:text-base-content placeholder:opacity-40"
                         />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-300 mb-2">Email Address (From Session)</label>
+                        <label className="block text-sm font-semibold text-base-content mb-2">Email Address (From Session)</label>
                         <input
                             type="email"
                             name="email"
                             value={formData.email}
                             readOnly
-                            className="w-full px-4 py-3 bg-gray-800/60 border border-gray-700 rounded-xl text-gray-400 cursor-not-allowed focus:outline-none"
+                            className="w-full px-4 py-3 bg-base-200 border border-base-300 rounded-xl text-base-content opacity-70 cursor-not-allowed focus:outline-none"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-300 mb-2">Phone Number</label>
+                        <label className="block text-sm font-semibold text-base-content mb-2">Phone Number</label>
                         <input
                             type="text"
                             name="phone"
@@ -156,14 +154,14 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
                             onChange={handleChange}
                             required
                             placeholder="e.g. +8801XXXXXXXXX"
-                            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
+                            className="w-full px-4 py-3 bg-base-200 border border-base-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-base-content placeholder:text-base-content placeholder:opacity-40"
                         />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-300 mb-2">Qualifications</label>
+                        <label className="block text-sm font-semibold text-base-content mb-2">Qualifications</label>
                         <input
                             type="text"
                             name="qualifications"
@@ -171,12 +169,12 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
                             onChange={handleChange}
                             required
                             placeholder="e.g. MBBS, FCPS"
-                            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
+                            className="w-full px-4 py-3 bg-base-200 border border-base-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-base-content placeholder:text-base-content placeholder:opacity-40"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-300 mb-2">Experience</label>
+                        <label className="block text-sm font-semibold text-base-content mb-2">Experience</label>
                         <input
                             type="text"
                             name="experience"
@@ -184,12 +182,12 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
                             onChange={handleChange}
                             required
                             placeholder="e.g. 5+ Years"
-                            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
+                            className="w-full px-4 py-3 bg-base-200 border border-base-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-base-content placeholder:text-base-content placeholder:opacity-40"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-300 mb-2">Consultation Fee</label>
+                        <label className="block text-sm font-semibold text-base-content mb-2">Consultation Fee</label>
                         <input
                             type="number"
                             name="consultationFee"
@@ -197,14 +195,14 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
                             onChange={handleChange}
                             required
                             placeholder="e.g. 500"
-                            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
+                            className="w-full px-4 py-3 bg-base-200 border border-base-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-base-content placeholder:text-base-content placeholder:opacity-40"
                         />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-300 mb-2">Chamber Address</label>
+                        <label className="block text-sm font-semibold text-base-content mb-2">Chamber Address</label>
                         <input
                             type="text"
                             name="chamberAddress"
@@ -212,12 +210,12 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
                             onChange={handleChange}
                             required
                             placeholder="e.g. Dhaka Medical Center, Room 402"
-                            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
+                            className="w-full px-4 py-3 bg-base-200 border border-base-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-base-content placeholder:text-base-content placeholder:opacity-40"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-300 mb-2">Hospital Name</label>
+                        <label className="block text-sm font-semibold text-base-content mb-2">Hospital Name</label>
                         <input
                             type="text"
                             name="hospitalName"
@@ -225,22 +223,22 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
                             onChange={handleChange}
                             required
                             placeholder="e.g. Square Hospital / Dhaka Medical"
-                            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
+                            className="w-full px-4 py-3 bg-base-200 border border-base-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-base-content placeholder:text-base-content placeholder:opacity-40"
                         />
                     </div>
                 </div>
 
-                <div className="p-4 bg-gray-800/50 border border-gray-700 rounded-xl space-y-4">
-                    <label className="block text-sm font-semibold text-gray-300">Available Slots (Time Range)</label>
+                <div className="p-4 bg-base-200/80 border border-base-300 rounded-xl space-y-4">
+                    <label className="block text-sm font-semibold text-base-content">Available Slots (Time Range)</label>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label className="block text-xs text-gray-400 mb-1">Session</label>
+                            <label className="block text-xs font-medium text-base-content opacity-80 mb-1">Session</label>
                             <select
                                 name="sessionType"
                                 value={formData.sessionType}
                                 onChange={handleChange}
-                                className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                                className="w-full px-3 py-2.5 bg-base-100 border border-base-300 rounded-lg text-base-content"
                             >
                                 <option value="Morning">Morning</option>
                                 <option value="Afternoon">Afternoon/Evening</option>
@@ -248,26 +246,26 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
                         </div>
 
                         <div>
-                            <label className="block text-xs text-gray-400 mb-1">From Time</label>
+                            <label className="block text-xs font-medium text-base-content opacity-80 mb-1">From Time</label>
                             <input
                                 type="time"
                                 name="startTime"
                                 value={formData.startTime}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                                className="w-full px-3 py-2 bg-base-100 border border-base-300 rounded-lg text-base-content"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-xs text-gray-400 mb-1">To Time</label>
+                            <label className="block text-xs font-medium text-base-content opacity-80 mb-1">To Time</label>
                             <input
                                 type="time"
                                 name="endTime"
                                 value={formData.endTime}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                                className="w-full px-3 py-2 bg-base-100 border border-base-300 rounded-lg text-base-content"
                             />
                         </div>
                     </div>
@@ -275,7 +273,7 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-300 mb-2">Post Title</label>
+                        <label className="block text-sm font-semibold text-base-content mb-2">Post Title</label>
                         <input
                             type="text"
                             name="title"
@@ -283,12 +281,12 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
                             onChange={handleChange}
                             required
                             placeholder="e.g. Heart Care Tips"
-                            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
+                            className="w-full px-4 py-3 bg-base-200 border border-base-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-base-content placeholder:text-base-content placeholder:opacity-40"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-xs text-gray-400 mb-1">Category</label>
+                        <label className="block text-sm font-semibold text-base-content mb-2">Category</label>
                         <input
                             type="text"
                             name="category"
@@ -296,13 +294,13 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
                             onChange={handleChange}
                             required
                             placeholder="e.g. Cardiology, Mental Health"
-                            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
+                            className="w-full px-4 py-3 bg-base-200 border border-base-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-base-content placeholder:text-base-content placeholder:opacity-40"
                         />
                     </div>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-gray-300 mb-2">Detailed Content</label>
+                    <label className="block text-sm font-semibold text-base-content mb-2">Detailed Content</label>
                     <textarea
                         name="content"
                         value={formData.content}
@@ -310,13 +308,13 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
                         required
                         rows="4"
                         placeholder="Write your article or advice here..."
-                        className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
+                        className="w-full px-4 py-3 bg-base-200 border border-base-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-base-content placeholder:text-base-content placeholder:opacity-40"
                     ></textarea>
                 </div>
 
                 <button
                     type="submit"
-                    className="w-full py-3.5 px-4 bg-white hover:bg-gray-200 text-gray-900 font-semibold rounded-xl shadow-lg transition-all duration-200 cursor-pointer"
+                    className="w-full py-3.5 px-4 bg-primary text-primary-content hover:opacity-90 font-semibold rounded-xl shadow-lg transition-all duration-200 cursor-pointer"
                 >
                     Publish Information & Post
                 </button>

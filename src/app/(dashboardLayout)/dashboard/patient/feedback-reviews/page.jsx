@@ -18,13 +18,11 @@ const FeedbackReviews = () => {
   const [completedAppointments, setCompletedAppointments] = useState([]);
   const [reviews, setReviews] = useState([]);
 
-
   const [activeDoctorId, setActiveDoctorId] = useState(null);
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0); 
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
-
 
   useEffect(() => {
     if (userId) {
@@ -42,21 +40,20 @@ const FeedbackReviews = () => {
 
   const fetchReviews = async () => {
     try {
+      const { data: tokenData } = await authClient.token();
 
-      const {data:tokenData} = await authClient.token()
-
-      const res = await fetch("http://localhost:5000/api/reviews",{
+      const res = await fetch("http://localhost:5000/api/reviews", {
         method: "GET",
         headers: {
           authorization: `Bearer ${tokenData?.token}`
-        }});
+        }
+      });
       const data = await res.json();
       if (Array.isArray(data)) setReviews(data);
     } catch (err) {
       console.error("Error fetching reviews:", err);
     }
   };
-
 
   const handleAddReview = async (doctorId) => {
     if (!comment) {
@@ -74,13 +71,14 @@ const FeedbackReviews = () => {
         comment,
       };
 
-      const {data:tokenData} = await authClient.token()
+      const { data: tokenData } = await authClient.token();
 
       const res = await fetch("http://localhost:5000/api/reviews", {
         method: "POST",
-        headers: { "Content-Type": "application/json",
+        headers: { 
+          "Content-Type": "application/json",
           authorization: `Bearer ${tokenData?.token}`
-         },
+        },
         body: JSON.stringify(reviewData),
       });
 
@@ -101,7 +99,6 @@ const FeedbackReviews = () => {
     }
   };
 
-  
   const handleDeleteReview = async (reviewId) => {
     if (window.confirm("Are you sure you want to delete this review?")) {
       try {
@@ -113,11 +110,11 @@ const FeedbackReviews = () => {
             headers: {
               authorization: `Bearer ${tokenData?.token}`
             }
-          },
-          
+          }
         );
         if (res.ok) {
           setReviews(reviews.filter((rev) => rev._id !== reviewId));
+          toast.success("Review deleted successfully!");
         }
       } catch (err) {
         console.error("Error deleting review:", err);
@@ -126,14 +123,14 @@ const FeedbackReviews = () => {
   };
 
   if (isPending) {
-    return <div className="p-8 text-center text-zinc-400">Loading...</div>;
+    return <div className="p-8 text-center text-base-content/60">Loading...</div>;
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto text-zinc-100">
+    <div className="p-8 max-w-4xl mx-auto text-base-content">
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Welcome, {userName}</h1>
-        <p className="text-sm text-zinc-400 mt-1">
+        <p className="text-sm text-base-content/60 mt-1">
           Manage your completed appointments and doctor reviews here.
         </p>
       </div>
@@ -149,35 +146,35 @@ const FeedbackReviews = () => {
             return (
               <div
                 key={item._id}
-                className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl shadow-xl space-y-4"
+                className="bg-base-100 border border-base-200 p-6 rounded-2xl shadow-xl space-y-4"
               >
                 <div className="flex justify-between items-start">
                   <div>
-                    <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold rounded-full flex items-center gap-1.5 w-max mb-2">
+                    <span className="px-3 py-1 bg-success/10 text-success border border-success/20 text-xs font-semibold rounded-full flex items-center gap-1.5 w-max mb-2">
                       <FiCheckCircle /> Completed
                     </span>
                     <h3 className="text-lg font-bold">Dr. {item.doctorName}</h3>
-                    <p className="text-sm text-zinc-400">
-                      Appointment Date: {item.date }
+                    <p className="text-sm text-base-content/60">
+                      Appointment Date: {item.date}
                     </p>
                   </div>
                 </div>
 
                 {existingReview ? (
-                  <div className="bg-zinc-800/50 p-4 rounded-xl border border-zinc-700/50 flex justify-between items-center">
+                  <div className="bg-base-200/50 p-4 rounded-xl border border-base-300 flex justify-between items-center">
                     <div>
                       <div className="flex items-center gap-1 text-amber-400 mb-1">
                         {[...Array(existingReview.rating)].map((_, i) => (
                           <FiStar key={i} className="fill-amber-400" />
                         ))}
                       </div>
-                      <p className="text-sm text-zinc-300">
+                      <p className="text-sm text-base-content/80">
                         "{existingReview.comment}"
                       </p>
                     </div>
                     <button
                       onClick={() => handleDeleteReview(existingReview._id)}
-                      className="p-2 bg-rose-500/10 text-rose-400 rounded-lg hover:bg-rose-500/20 transition-all"
+                      className="p-2 bg-error/10 text-error rounded-lg hover:bg-error/20 transition-all cursor-pointer"
                       title="Delete Review"
                     >
                       <FiTrash2 />
@@ -186,10 +183,9 @@ const FeedbackReviews = () => {
                 ) : (
                   <div>
                     {activeDoctorId === doctorId ? (
-                      <div className="bg-zinc-800/40 p-4 rounded-xl border border-zinc-700 space-y-4">
-
+                      <div className="bg-base-200/40 p-4 rounded-xl border border-base-300 space-y-4">
                         <div className="flex flex-col gap-1.5">
-                          <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                          <span className="text-xs font-medium text-base-content/60 uppercase tracking-wider">
                             Select Rating ({rating} / 5)
                           </span>
                           <div className="flex items-center gap-1.5">
@@ -200,13 +196,13 @@ const FeedbackReviews = () => {
                                 onClick={() => setRating(star)}
                                 onMouseEnter={() => setHoverRating(star)}
                                 onMouseLeave={() => setHoverRating(0)}
-                                className="focus:outline-none transition-transform hover:scale-110"
+                                className="focus:outline-none transition-transform hover:scale-110 cursor-pointer"
                               >
                                 <FiStar
                                   className={`w-6 h-6 ${
                                     (hoverRating || rating) >= star
                                       ? "text-amber-400 fill-amber-400"
-                                      : "text-zinc-600"
+                                      : "text-base-content/30"
                                   }`}
                                 />
                               </button>
@@ -214,15 +210,13 @@ const FeedbackReviews = () => {
                           </div>
                         </div>
 
-
                         <textarea
                           rows="3"
                           placeholder="Write your feedback about the doctor..."
                           value={comment}
                           onChange={(e) => setComment(e.target.value)}
-                          className="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-sm text-zinc-100 focus:outline-none focus:border-indigo-500"
+                          className="w-full bg-base-100 border border-base-300 rounded-xl p-3 text-sm text-base-content focus:outline-none focus:border-primary"
                         />
-
 
                         <div className="flex gap-2 justify-end">
                           <button
@@ -231,14 +225,14 @@ const FeedbackReviews = () => {
                               setRating(5);
                               setComment("");
                             }}
-                            className="px-4 py-2 bg-zinc-800 text-zinc-400 rounded-xl text-sm font-medium hover:bg-zinc-700"
+                            className="px-4 py-2 bg-base-200 text-base-content/70 rounded-xl text-sm font-medium hover:bg-base-300 cursor-pointer"
                           >
                             Cancel
                           </button>
                           <button
                             disabled={loading}
                             onClick={() => handleAddReview(doctorId)}
-                            className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-500 transition-all"
+                            className="px-4 py-2 bg-primary text-primary-content rounded-xl text-sm font-medium hover:opacity-90 transition-all cursor-pointer"
                           >
                             {loading ? "Submitting..." : "Submit Review"}
                           </button>
@@ -251,7 +245,7 @@ const FeedbackReviews = () => {
                           setRating(5);
                           setComment("");
                         }}
-                        className="flex items-center gap-2 px-4 py-2 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-xl text-sm font-medium hover:bg-indigo-500/20 transition-all"
+                        className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-xl text-sm font-medium hover:bg-primary/20 transition-all cursor-pointer"
                       >
                         <FiMessageSquare /> Add Review
                       </button>
@@ -262,7 +256,7 @@ const FeedbackReviews = () => {
             );
           })
         ) : (
-          <p className="text-zinc-500 text-center py-10">
+          <p className="text-base-content/50 text-center py-10">
             No completed appointments found to review.
           </p>
         )}
