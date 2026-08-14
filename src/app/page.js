@@ -1,4 +1,5 @@
 import Banner from "@/components/Banner";
+import MedicalSpecializations from "@/components/MedicalSpecializations";
 import MeetOurDoctors from "@/components/MeetOurDoctors";
 import PatientReviews from "@/components/PatientReviews";
 import WhyChooseUs from "@/components/WhyChooseUs";
@@ -11,6 +12,7 @@ export default function Home() {
      <WhyChooseUs></WhyChooseUs>
      <MeetOurDoctors></MeetOurDoctors>
      <PatientReviews></PatientReviews>
+     <MedicalSpecializations></MedicalSpecializations>
     </div>
   );
 }
