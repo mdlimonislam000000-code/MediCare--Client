@@ -36,8 +36,8 @@ export async function POST(request) {
         },
       ],
       mode: "payment",
-      success_url: `http://localhost:3000/dashboard/patient/my-appointments?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `http://localhost:3000/doctor/${doctorId}?canceled=true`,
+      success_url: `${process.env.BETTER_AUTH_URL}/dashboard/patient/my-appointments?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.BETTER_AUTH_URL}/doctor/${doctorId}?canceled=true`,
       
       metadata: {
         userId: userId || "",          
