@@ -7,7 +7,6 @@ import { authClient } from "@/lib/auth-client";
 import ViewPrescription from "@/components/ViewPrescription";
 import toast from "react-hot-toast";
 
-
 const PaitentAppoimentPage = () => {
       const searchParams = useSearchParams();
   const success = searchParams.get("success");
