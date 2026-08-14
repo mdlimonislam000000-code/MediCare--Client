@@ -1,317 +1,234 @@
 'use client'
+import CreateDoctorPost from '@/components/CreateDoctorPost';
+import DoctorEdtiPost from '@/components/DoctorEditPost';
+
 import { authClient } from '@/lib/auth-client';
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { FaPlus, FaEdit, FaTrash, FaTimes } from 'react-icons/fa';
 
 const DoctorPost = () => {
     const { data: session, isPending } = authClient.useSession();
     const user = session?.user;
 
-  const [formData, setFormData] = useState({
-    userId: '', 
-    doctorName: '',
-    email: '',
-    phone: '',
-    imageUrl: '', 
-    specialty: '',
-    qualifications: '',
-    experience: '',
-    consultationFee: '',
-    chamberAddress: '',
-    hospitalName: '',
-    sessionType: 'Morning',
-    startTime: '',
-    endTime: '',
-    title: '',
-    category: '',
-    content: ''
-  });
+    const [doctorPosts, setDoctorPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    
+    // এডিট মডালের জন্য স্টেটগুলো যুক্ত করা হলো
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingPost, setEditingPost] = useState(null);
 
-  useEffect(() => {
-    if (user) {
-      const currentUserId = user.id || user._id; 
-      setFormData((prev) => ({
-        ...prev,
-        userId: currentUserId,
-        doctorName: user.name,
-        email: user.email,
-        imageUrl: user.image
-      }));
+    const fetchDoctorPosts = async (currentUserId) => {
+        try {
+            const response = await fetch('http://localhost:5000/api/doctor-posts');
+            const data = await response.json();
+
+            if (Array.isArray(data)) {
+                const matchedPosts = data.filter(
+                    (post) => post.userId === currentUserId || post.doctorId === currentUserId
+                );
+                setDoctorPosts(matchedPosts);
+            }
+        } catch (error) {
+            console.error("Error fetching posts:", error);
+            toast.error("Failed to load posts.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (user) {
+            const currentUserId = user.id || user._id; 
+            fetchDoctorPosts(currentUserId);
+        } else if (!isPending) {
+            setLoading(false);
+        }
+    }, [user, isPending]);
+
+    const handleDelete = async (postId) => {
+        if (!confirm("Are you sure you want to delete this post?")) return;
+
+        try {
+            const { data: tokenData } = await authClient.token();
+            const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
+
+            const response = await fetch(`http://localhost:5000/api/doctor-posts/${postId}`, {
+                method: 'DELETE',
+                headers: {
+                    authorization: `Bearer ${token}`,
+                },
+            });
+
+            const result = await response.json();
+            if (response.ok || result.success) {
+                toast.success("Post deleted successfully!");
+                setDoctorPosts(doctorPosts.filter(post => (post._id || post.id) !== postId));
+            } else {
+                toast.error("Failed to delete post.");
+            }
+        } catch (error) {
+            console.error("Error deleting post:", error);
+            toast.error("Something went wrong.");
+        }
+    };
+
+    const handlePostSuccess = () => {
+        setIsModalOpen(false);
+        if (user) {
+            fetchDoctorPosts(user.id || user._id);
+        }
+    };
+
+    const handleUpdateSuccess = () => {
+        setIsEditModalOpen(false);
+        setEditingPost(null);
+        if (user) {
+            fetchDoctorPosts(user.id || user._id);
+        }
+    };
+
+    if (isPending || loading) {
+        return (
+            <div className="max-w-6xl mx-auto my-12 p-8 text-center text-gray-400">
+                Loading your posts...
+            </div>
+        );
     }
-  }, [user]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const { data: tokenData } = await authClient.token();
-    const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
-    
-    const response = await fetch('http://localhost:5000/api/doctor-posts', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(formData), 
-    });
-    
-    const result = await response.json();
-    
-    if (result.insertedId) {
-      toast.success('Doctor profile & post saved successfully!');
-
-      const currentUserId = user?.id || user?._id;
-      setFormData({
-        userId: currentUserId,
-        doctorName: user?.name || '',
-        email: user?.email || '',
-        imageUrl: user?.image || '',
-        phone: '',
-        specialty: '',
-        qualifications: '',
-        experience: '',
-        consultationFee: '',
-        chamberAddress: '',
-        hospitalName: '',
-        sessionType: 'Morning',
-        startTime: '',
-        endTime: '',
-        title: '',
-        category: '',
-        content: ''
-      });
-    } else {
-      toast.error('Failed to submit post.');
-    }
-  };
-
-  return (
-    <div className="max-w-3xl mx-auto my-12 p-8 bg-gray-900 shadow-2xl rounded-2xl border border-gray-800 text-gray-100">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-extrabold tracking-tight text-white">Doctor Details & Post Form</h2>
-        <p className="text-sm text-gray-400 mt-2">Add professional info, schedule slots, and medical insights.</p>
-      </div>
-      
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Doctor's Name (From Session)</label>
-            <input
-              type="text"
-              name="doctorName"
-              value={formData.doctorName}
-              readOnly
-              className="w-full px-4 py-3 bg-gray-800/60 border border-gray-700 rounded-xl text-gray-400 cursor-not-allowed focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Specialty</label>
-            <input
-              type="text"
-              name="specialty"
-              value={formData.specialty}
-              onChange={handleChange}
-              required
-              placeholder="e.g. Cardiologist"
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Email Address (From Session)</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              readOnly
-              className="w-full px-4 py-3 bg-gray-800/60 border border-gray-700 rounded-xl text-gray-400 cursor-not-allowed focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Phone Number</label>
-            <input
-              type="text"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-              placeholder="e.g. +8801XXXXXXXXX"
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Qualifications</label>
-            <input
-              type="text"
-              name="qualifications"
-              value={formData.qualifications}
-              onChange={handleChange}
-              required
-              placeholder="e.g. MBBS, FCPS"
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Experience</label>
-            <input
-              type="text"
-              name="experience"
-              value={formData.experience}
-              onChange={handleChange}
-              required
-              placeholder="e.g. 5+ Years"
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Consultation Fee</label>
-            <input
-              type="number"
-              name="consultationFee"
-              value={formData.consultationFee}
-              onChange={handleChange}
-              required
-              placeholder="e.g. 500"
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Chamber Address</label>
-            <input
-              type="text"
-              name="chamberAddress"
-              value={formData.chamberAddress}
-              onChange={handleChange}
-              required
-              placeholder="e.g. Dhaka Medical Center, Room 402"
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Hospital Name</label>
-            <input
-              type="text"
-              name="hospitalName"
-              value={formData.hospitalName}
-              onChange={handleChange}
-              required
-              placeholder="e.g. Square Hospital / Dhaka Medical"
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
-            />
-          </div>
-        </div>
-
-        <div className="p-4 bg-gray-800/50 border border-gray-700 rounded-xl space-y-4">
-          <label className="block text-sm font-semibold text-gray-300">Available Slots (Time Range)</label>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Session</label>
-              <select
-                name="sessionType"
-                value={formData.sessionType}
-                onChange={handleChange}
-                className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white"
-              >
-                <option value="Morning">Morning</option>
-                <option value="Afternoon">Afternoon/Evening</option>
-              </select>
+    return (
+        <div className="max-w-6xl mx-auto my-12 p-8 bg-gray-900 shadow-2xl rounded-2xl border border-gray-800 text-gray-100">
+            {/* Top Header with Add Post Button */}
+            <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-800">
+                <div>
+                    <h2 className="text-3xl font-extrabold tracking-tight text-white">My Doctor Posts</h2>
+                    <p className="text-sm text-gray-400 mt-1">View and manage your submitted medical posts.</p>
+                </div>
+                <button
+                    type="button"
+                    onClick={() => setIsModalOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition shadow-md text-sm cursor-pointer"
+                >
+                    <FaPlus size={14} /> Add Post
+                </button>
             </div>
 
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">From Time</label>
-              <input
-                type="time"
-                name="startTime"
-                value={formData.startTime}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
-              />
-            </div>
+            {doctorPosts.length === 0 ? (
+                <div className="text-center py-16 bg-gray-800/40 rounded-xl border border-gray-800">
+                    <p className="text-gray-400">You haven't posted anything yet.</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {doctorPosts.map((post) => {
+                        const postId = post._id || post.id;
+                        return (
+                            <div key={postId} className="bg-gray-800/60 border border-gray-700 rounded-2xl p-6 shadow-lg flex flex-col justify-between">
+                                <div>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="flex items-center gap-3">
+                                            <img
+                                                src={post.imageUrl || user?.image || "https://via.placeholder.com/60"}
+                                                alt="Doctor"
+                                                className="w-12 h-12 rounded-full object-cover border border-gray-600"
+                                            />
+                                            <div>
+                                                <h3 className="text-base font-bold text-white line-clamp-1">{post.doctorName || user?.name}</h3>
+                                                <p className="text-indigo-400 text-xs font-medium">{post.specialty}</p>
+                                            </div>
+                                        </div>
+                                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase ${
+                                            post.status === 'approved' 
+                                                ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' 
+                                                : 'bg-amber-950 text-amber-400 border border-amber-800'
+                                        }`}>
+                                            {post.status || 'pending'}
+                                        </span>
+                                    </div>
 
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">To Time</label>
-              <input
-                type="time"
-                name="endTime"
-                value={formData.endTime}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
-              />
-            </div>
-          </div>
+                                    <div className="space-y-1.5 text-xs text-gray-300 my-4 py-3 border-y border-gray-700">
+                                        <div><span className="text-gray-500">Fee:</span> ৳ {post.consultationFee}</div>
+                                        <div><span className="text-gray-500">Hospital:</span> {post.hospitalName}</div>
+                                        <div><span className="text-gray-500">Chamber:</span> {post.chamberAddress}</div>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <h4 className="text-sm font-bold text-white line-clamp-1 mb-1">{post.title}</h4>
+                                        <span className="text-[10px] text-indigo-400 bg-indigo-950/60 px-2 py-0.5 rounded border border-indigo-900 inline-block mb-1">
+                                            {post.category}
+                                        </span>
+                                        <p className="text-xs text-gray-400 line-clamp-2">{post.content}</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-3 pt-4 border-t border-gray-700 mt-auto">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEditingPost(post);
+                                            setIsEditModalOpen(true);
+                                        }}
+                                        className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-xl text-xs font-semibold transition cursor-pointer"
+                                    >
+                                        <FaEdit size={12} /> Edit
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDelete(postId)}
+                                        className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-950/60 hover:bg-red-900/80 text-red-400 border border-red-900/50 rounded-xl text-xs font-semibold transition cursor-pointer"
+                                    >
+                                        <FaTrash size={12} /> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+
+            {/* Modal for Adding Post */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto">
+                    <div className="relative w-full max-w-3xl my-8 p-8 bg-gray-900 shadow-2xl rounded-2xl border border-gray-800 max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-end mb-2">
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="text-gray-400 hover:text-white p-2 rounded-lg bg-gray-800/80 border border-gray-700 cursor-pointer transition"
+                            >
+                                <FaTimes size={16} />
+                            </button>
+                        </div>
+                        
+                        <CreateDoctorPost onPostSuccess={handlePostSuccess} />
+                    </div>
+                </div>
+            )}
+
+            {/* Modal for Editing Post */}
+            {isEditModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto">
+                    <div className="relative w-full max-w-3xl my-8 p-8 bg-gray-900 shadow-2xl rounded-2xl border border-gray-800 max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-end mb-2">
+                            <button
+                                onClick={() => {
+                                    setIsEditModalOpen(false);
+                                    setEditingPost(null);
+                                }}
+                                className="text-gray-400 hover:text-white p-2 rounded-lg bg-gray-800/80 border border-gray-700 cursor-pointer transition"
+                            >
+                                <FaTimes size={16} />
+                            </button>
+                        </div>
+                        
+                        <DoctorEdtiPost 
+                            postData={editingPost} 
+                            onUpdateSuccess={handleUpdateSuccess} 
+                        />
+                    </div>
+                </div>
+            )}
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Post Title</label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-              placeholder="e.g. Heart Care Tips"
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Category</label>
-            <input
-              type="text"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-              placeholder="e.g. Cardiology, Mental Health"
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-semibold text-gray-300 mb-2">Detailed Content</label>
-          <textarea
-            name="content"
-            value={formData.content}
-            onChange={handleChange}
-            required
-            rows="4"
-            placeholder="Write your article or advice here..."
-            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 text-white placeholder-gray-500"
-          ></textarea>
-        </div>
-
-        <button
-          type="submit"
-          className="w-full py-3.5 px-4 bg-white hover:bg-gray-200 text-gray-900 font-semibold rounded-xl shadow-lg transition-all duration-200 cursor-pointer"
-        >
-          Publish Information & Post
-        </button>
-      </form>
-    </div>
-  );
+    );
 };
 
 export default DoctorPost;

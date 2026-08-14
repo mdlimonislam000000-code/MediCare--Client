@@ -1,71 +1,113 @@
-
 "use client";
 
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FaCheck, FaTrash, FaBan } from "react-icons/fa";
+import { authClient } from "@/lib/auth-client";
 
 const VerifyDoctor = () => {
-
-    const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchPosts = () => {
-    fetch("http://localhost:5000/api/admin/doctor-posts")
-      .then((res) => res.json())
-      .then((data) => {
-        setPosts(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
+  const fetchPosts = async () => {
+    try {
+      const { data: tokenData } = await authClient.token();
+      const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
+
+      const res = await fetch("http://localhost:5000/api/admin/doctor-posts", {
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${token}`
+        }
       });
+      const data = await res.json();
+      setPosts(Array.isArray(data) ? data : data.result || []);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to fetch posts");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchPosts();
   }, []);
 
-  const handleApprove = (id) => {
-    fetch(`http://localhost:5000/api/doctor-posts/approve/${id}`, {
-      method: "PATCH",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.modifiedCount > 0) {
-          toast.success("Post approved successfully!");
-          fetchPosts(); 
+  const handleApprove = async (id) => {
+    try {
+      const { data: tokenData } = await authClient.token();
+      const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
+
+      const res = await fetch(`http://localhost:5000/api/doctor-posts/approve/${id}`, {
+        method: "PATCH",
+        headers: {
+          authorization: `Bearer ${token}`
         }
       });
-  };
-
-  const handleDelete = (id) => {
-    if (confirm("Are you sure you want to delete this post?")) {
-      fetch(`http://localhost:5000/api/doctor-posts/${id}`, {
-        method: "DELETE",
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.deletedCount > 0) {
-            toast.dismiss("Post deleted successfully!");
-            fetchPosts();
-          }
-        });
+      const data = await res.json();
+      
+      if (res.ok && data.modifiedCount > 0) {
+        toast.success("Post approved successfully!");
+        fetchPosts(); 
+      } else {
+        toast.error(data.message || "Failed to approve post");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong");
     }
   };
 
-  const handleSuspend = (id) => {
-    fetch(`http://localhost:5000/api/doctor-posts/suspend/${id}`, {
-      method: "PATCH",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.modifiedCount > 0) {
-          toast.error("Post suspended!");
+  const handleDelete = async (id) => {
+    if (confirm("Are you sure you want to delete this post?")) {
+      try {
+        const { data: tokenData } = await authClient.token();
+        const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
+
+        const res = await fetch(`http://localhost:5000/api/doctor-posts/${id}`, {
+          method: "DELETE",
+          headers: {
+            authorization: `Bearer ${token}`
+          }
+        });
+        const data = await res.json();
+
+        if (res.ok && (data.deletedCount > 0 || data.success)) {
+          toast.success("Post deleted successfully!");
           fetchPosts();
+        } else {
+          toast.error(data.message || "Failed to delete post");
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error("Something went wrong");
+      }
+    }
+  };
+
+  const handleSuspend = async (id) => {
+    try {
+      const { data: tokenData } = await authClient.token();
+  
+      const res = await fetch(`http://localhost:5000/api/doctor-posts/suspend/${id}`, {
+        method: "PATCH",
+        headers: {
+          authorization: `Bearer ${tokenData?.token}`
         }
       });
+      const data = await res.json();
+
+      if (res.ok && data.modifiedCount > 0) {
+        toast.error("Post suspended!");
+        fetchPosts();
+      } else {
+        toast.error(data.message || "Failed to suspend post");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong");
+    }
   };
 
   if (loading) {
@@ -75,6 +117,7 @@ const VerifyDoctor = () => {
       </div>
     );
   }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#030712] p-6 md:p-10 transition-colors duration-500">
       <div className="max-w-7xl mx-auto">

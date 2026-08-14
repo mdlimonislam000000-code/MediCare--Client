@@ -94,9 +94,12 @@ const PrescriptionCabin = () => {
     };
 
     try {
+      const {data:tokenData}= await authClient.token()
       const res = await fetch("http://localhost:5000/api/prescriptions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+          authorization: `Bearer ${tokenData?.token}`
+         },
         body: JSON.stringify(prescriptionData),
       });
 
@@ -125,9 +128,12 @@ const PrescriptionCabin = () => {
     const rxId = updatedData._id || updatedData.id;
 
     try {
+      const {data:tokenData} = await authClient.token()
       const res = await fetch(`http://localhost:5000/api/prescriptions/${rxId}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+          authorization: `Bearer ${tokenData?.token}`
+         },
         body: JSON.stringify({
           diagnosis: updatedData.diagnosis,
           advice: updatedData.advice,
