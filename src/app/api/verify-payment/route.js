@@ -41,7 +41,7 @@ export async function GET(request) {
         });
       // console.log(token, 'booking token')
 
-      const backendRes = await fetch("http://localhost:5000/api/bookings", {
+      const backendRes = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/bookings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

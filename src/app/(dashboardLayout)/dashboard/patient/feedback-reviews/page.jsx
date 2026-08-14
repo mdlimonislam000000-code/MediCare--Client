@@ -26,7 +26,7 @@ const FeedbackReviews = () => {
 
   useEffect(() => {
     if (userId) {
-      fetch(`http://localhost:5000/api/bookings/user/${userId}`)
+      fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/bookings/user/${userId}`)
         .then((res) => res.json())
         .then((data) => {
           const items = Array.isArray(data) ? data : data.result || [];
@@ -42,7 +42,7 @@ const FeedbackReviews = () => {
     try {
       const { data: tokenData } = await authClient.token();
 
-      const res = await fetch("http://localhost:5000/api/reviews", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/reviews`, {
         method: "GET",
         headers: {
           authorization: `Bearer ${tokenData?.token}`
@@ -73,7 +73,7 @@ const FeedbackReviews = () => {
 
       const { data: tokenData } = await authClient.token();
 
-      const res = await fetch("http://localhost:5000/api/reviews", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/reviews`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -104,7 +104,7 @@ const FeedbackReviews = () => {
       try {
         const { data: tokenData } = await authClient.token();
         const res = await fetch(
-          `http://localhost:5000/api/reviews/${reviewId}`,
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/reviews/${reviewId}`,
           {
             method: "DELETE",
             headers: {

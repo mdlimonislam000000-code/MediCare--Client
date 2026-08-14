@@ -22,21 +22,21 @@ const DoctorOverview = () => {
     if (user?.id || user?._id) {
       const doctorId = user.id || user._id;
 
-      fetch(`http://localhost:5000/api/bookings/doctor/${doctorId}`)
+      fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/bookings/doctor/${doctorId}`)
         .then((res) => res.json())
         .then((data) => {
           if (Array.isArray(data)) setBookings(data);
         })
         .catch((err) => console.error("Error fetching bookings:", err));
 
-      fetch(`http://localhost:5000/api/prescriptions`)
+      fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/prescriptions`)
         .then((res) => res.json())
         .then((data) => {
           if (Array.isArray(data)) setPrescriptions(data);
         })
         .catch((err) => console.error("Error fetching prescriptions:", err));
 
-      fetch(`http://localhost:5000/api/reviews?doctorId=${doctorId}`)
+      fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/reviews?doctorId=${doctorId}`)
         .then((res) => res.json())
         .then((data) => {
           if (Array.isArray(data)) setReviews(data);

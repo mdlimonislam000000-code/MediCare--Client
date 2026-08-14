@@ -34,7 +34,7 @@ const PaitentEditAppointmntCard = ({ appointment, onUpdateSuccess }) => {
       
       const {data:tokenData} = await authClient.token()
 
-      const res = await fetch(`http://localhost:5000/api/bookings/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/bookings/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

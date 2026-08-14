@@ -29,7 +29,7 @@ const AppointmentsContent = () => {
           const { data: tokenData } = await authClient.token();
           const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
 
-          const res = await fetch(`http://localhost:5000/api/verify-payment?session_id=${sessionId}`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/verify-payment?session_id=${sessionId}`, {
             headers: {
               authorization: `Bearer ${token}`
             }
@@ -58,7 +58,7 @@ const AppointmentsContent = () => {
       const { data: tokenData } = await authClient.token();
       const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
 
-      const res = await fetch("http://localhost:5000/api/prescriptions", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/prescriptions`, {
         headers: {
           authorization: `Bearer ${token}`
         }
@@ -78,7 +78,7 @@ const AppointmentsContent = () => {
       const { data: tokenData } = await authClient.token();
       const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
 
-      const res = await fetch(`http://localhost:5000/api/bookings/user/${currentUserId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/bookings/user/${currentUserId}`, {
         headers: {
           authorization: `Bearer ${token}`
         }
@@ -110,7 +110,7 @@ const AppointmentsContent = () => {
         const { data: tokenData } = await authClient.token();
         const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
 
-        const res = await fetch(`http://localhost:5000/api/bookings/${id}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/bookings/${id}`, {
           method: "DELETE",
           headers: {
             authorization: `Bearer ${token}`

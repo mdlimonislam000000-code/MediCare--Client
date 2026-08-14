@@ -22,7 +22,7 @@ const OverviewMain = () => {
 
     const fetchAppointments = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/bookings/doctor/${doctorId}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/bookings/doctor/${doctorId}`);
         const data = await res.json();
         
         setAppointments(data.slice(0, 2));

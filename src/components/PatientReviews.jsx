@@ -8,7 +8,7 @@ const PatientReviews = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/reviews')
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/reviews`)
       .then(res => res.json())
       .then(data => {
         setReviews(data);

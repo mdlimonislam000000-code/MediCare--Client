@@ -70,7 +70,7 @@ const DoctorEdtiPost = ({ postData, onUpdateSuccess }) => {
             const { data: tokenData } = await authClient.token();
             const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
             
-            const response = await fetch(`http://localhost:5000/api/doctor-posts/${postId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/doctor-posts/${postId}`, {
                 method: 'PUT', // অথবা আপনার ব্যাকএন্ড অনুযায়ী PATCH ব্যবহার করতে পারেন
                 headers: {
                     'Content-Type': 'application/json',

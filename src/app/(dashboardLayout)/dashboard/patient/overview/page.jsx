@@ -23,7 +23,7 @@ const PatientOverview = () => {
       if (!userId) return;
 
       try {
-        const res = await fetch(`http://localhost:5000/api/appointments/patient/${userId}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/appointments/patient/${userId}`);
         const data = await res.json();
 
         if (res.ok) {

@@ -52,7 +52,7 @@ const CreateDoctorPost = ({ onPostSuccess }) => {
             const { data: tokenData } = await authClient.token();
             const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
             
-            const response = await fetch('http://localhost:5000/api/doctor-posts', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/doctor-posts`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

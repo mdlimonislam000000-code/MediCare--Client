@@ -17,7 +17,7 @@ const Banner = () => {
 
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/doctor-posts')
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/doctor-posts`)
       .then(res => res.json())
       .then(data => {
         const formattedDoctors = data.map(doc => ({

@@ -81,7 +81,7 @@ const PatientProfile = () => {
     const userId = user?.id || user?._id;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/${userId}`, {
         method: "DELETE",
       });
 

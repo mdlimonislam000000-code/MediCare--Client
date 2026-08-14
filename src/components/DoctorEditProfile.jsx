@@ -87,7 +87,7 @@ const DoctorEditProfile = ({ doctorData, user, onUpdateSuccess }) => {
       };
 
       const [userRes, postRes] = await Promise.all([
-        fetch(`http://localhost:5000/api/users/${userId}`, {
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/${userId}`, {
           method: 'PATCH',
           headers: { 
             'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ const DoctorEditProfile = ({ doctorData, user, onUpdateSuccess }) => {
           },
           body: JSON.stringify(userInfoData),
         }),
-        fetch(`http://localhost:5000/api/doctor-posts/${userId}`, {
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/doctor-posts/${userId}`, {
           method: 'PATCH',
           headers: { 
             'Content-Type': 'application/json',

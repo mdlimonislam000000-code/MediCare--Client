@@ -46,7 +46,7 @@ const PrescriptionCabin = () => {
 
   const fetchPrescriptions = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/prescriptions");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/prescriptions`);
       const data = await res.json();
       if (Array.isArray(data)) {
         setAllPrescriptions(data);
@@ -95,7 +95,7 @@ const PrescriptionCabin = () => {
 
     try {
       const {data:tokenData}= await authClient.token()
-      const res = await fetch("http://localhost:5000/api/prescriptions", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/prescriptions`, {
         method: "POST",
         headers: { "Content-Type": "application/json",
           authorization: `Bearer ${tokenData?.token}`
@@ -129,7 +129,7 @@ const PrescriptionCabin = () => {
 
     try {
       const {data:tokenData} = await authClient.token()
-      const res = await fetch(`http://localhost:5000/api/prescriptions/${rxId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/prescriptions/${rxId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json",
           authorization: `Bearer ${tokenData?.token}`

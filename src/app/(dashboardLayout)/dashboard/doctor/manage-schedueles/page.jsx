@@ -45,7 +45,7 @@ const ManageSchedules = () => {
     
     const queryParam = email ? `email=${email}` : `userId=${id}`;
     
-    fetch(`http://localhost:5000/api/doctor/schedule?${queryParam}`)
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/doctor/schedule?${queryParam}`)
       .then((res) => res.json())
       .then((data) => {
         // console.log("Fetched Schedule Data:", data);
@@ -106,7 +106,7 @@ const ManageSchedules = () => {
       availableSlots: timeSlots 
     };
 
-    fetch('http://localhost:5000/api/doctor/schedule', {
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/doctor/schedule`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',

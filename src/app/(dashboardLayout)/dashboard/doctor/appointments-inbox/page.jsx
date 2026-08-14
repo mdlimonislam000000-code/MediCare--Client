@@ -21,8 +21,8 @@ const AppointmentsInbox = () => {
         setLoading(true);
 
         const [bookingsRes, prescriptionsRes] = await Promise.all([
-          fetch(`http://localhost:5000/api/bookings/doctor/${doctorUserId}`),
-          fetch(`http://localhost:5000/api/prescriptions`)
+          fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/bookings/doctor/${doctorUserId}`),
+          fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/prescriptions`)
         ]);
 
         const bookingsData = await bookingsRes.json();

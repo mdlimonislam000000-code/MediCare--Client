@@ -5,6 +5,11 @@ import PatientReviews from "@/components/PatientReviews";
 import WhyChooseUs from "@/components/WhyChooseUs";
 import Image from "next/image";
 
+export const metadata = {
+  title: "Home - MediCare Connect",
+  description: "Learn more about MediCare Connect and our healthcare services.",
+};
+
 export default function Home() {
   return (
     <div>

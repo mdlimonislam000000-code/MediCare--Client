@@ -13,7 +13,7 @@ const DoctorDetailsPage = async ({ params }) => {
 
   let doctorData = null;
   try {
-    const res = await fetch(`http://localhost:5000/api/doctor-posts/${id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/doctor-posts/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

@@ -32,9 +32,9 @@ const Doctorprofile = () => {
 
     try {
       const [postsRes, bookingsRes, reviewsRes] = await Promise.all([
-        fetch("http://localhost:5000/api/doctor-posts", { cache: 'no-store' }),
-        fetch(`http://localhost:5000/api/bookings/doctor/${doctorId}`, { cache: 'no-store' }),
-        fetch(`http://localhost:5000/api/reviews?doctorId=${doctorId}`, { cache: 'no-store' }),
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/doctor-posts`, { cache: 'no-store' }),
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/bookings/doctor/${doctorId}`, { cache: 'no-store' }),
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/reviews?doctorId=${doctorId}`, { cache: 'no-store' }),
       ]);
 
       const posts = await postsRes.json();

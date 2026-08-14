@@ -20,7 +20,7 @@ const DoctorPost = () => {
 
     const fetchDoctorPosts = async (currentUserId) => {
         try {
-            const response = await fetch('http://localhost:5000/api/doctor-posts');
+            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/doctor-posts`);
             const data = await response.json();
 
             if (Array.isArray(data)) {
@@ -54,7 +54,7 @@ const DoctorPost = () => {
             const { data: tokenData } = await authClient.token();
             const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
 
-            const response = await fetch(`http://localhost:5000/api/doctor-posts/${postId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/doctor-posts/${postId}`, {
                 method: 'DELETE',
                 headers: {
                     authorization: `Bearer ${token}`,
