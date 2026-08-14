@@ -1,4 +1,5 @@
 "use client";
+import { authClient } from "@/lib/auth-client";
 import React, { useEffect, useState } from "react";
 
 
@@ -9,7 +10,12 @@ const CashFlows = () => {
   useEffect(() => {
     const fetchCashFlows = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/admin/cash-flows");
+        const {data:tokenData} = await authClient.token()
+        const res = await fetch("http://localhost:5000/api/admin/cash-flows",{
+          headers:{
+            authorization: `Bearer ${tokenData?.token}`
+          }
+        });
         const data = await res.json();
         setCashFlows(data);
       } catch (error) {

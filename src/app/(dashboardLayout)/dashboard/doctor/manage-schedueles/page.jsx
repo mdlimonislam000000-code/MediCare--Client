@@ -1,5 +1,5 @@
 'use client'
-import { useSession } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { HiOutlinePlus } from "react-icons/hi";
@@ -13,9 +13,24 @@ const ManageSchedules = () => {
   const [timeSlots, setTimeSlots] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const [token, setToken] = useState(null);
 
   const [doctorEmail, setDoctorEmail] = useState("");
   const [doctorId, setDoctorId] = useState("");
+
+  // টোকেন ফেচ করার জন্য useEffect
+  useEffect(() => {
+    async function getToken() {
+      try {
+        const sessionToken = await authClient.token();
+        const extractedToken = sessionToken?.data || sessionToken;
+        setToken(extractedToken);
+      } catch (err) {
+        console.error("Error fetching auth token:", err);
+      }
+    }
+    getToken();
+  }, []);
 
   useEffect(() => {
     if (session?.user) {
@@ -78,6 +93,11 @@ const ManageSchedules = () => {
       return;
     }
 
+    if (!token) {
+      toast.error("Auth token not found. Please login again.");
+      return;
+    }
+
     setLoading(true);
     const scheduleData = { 
       email: doctorEmail, 
@@ -88,7 +108,10 @@ const ManageSchedules = () => {
 
     fetch('http://localhost:5000/api/doctor/schedule', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(scheduleData)
     })
       .then((res) => res.json())

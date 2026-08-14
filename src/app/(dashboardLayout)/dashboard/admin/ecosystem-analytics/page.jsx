@@ -1,4 +1,5 @@
 "use client";
+import { authClient } from "@/lib/auth-client";
 import React, { useEffect, useState } from "react";
 import { 
   FaUserInjured, FaUserMd, FaCalendarCheck, FaDollarSign 
@@ -52,7 +53,14 @@ const EcosystemAnalytics = () => {
   useEffect(() => {
     const fetchAllData = async () => {
       try {
-        const resAnalytics = await fetch("http://localhost:5000/api/admin/ecosystem-analytics");
+        
+        const {data:tokenData} = await authClient.token()
+        const resAnalytics = await fetch("http://localhost:5000/api/admin/ecosystem-analytics",{
+          headers: {
+            'content-type' : 'application/json',
+            authorization : `Bearer ${tokenData?.token}`
+          }
+        });
         const analyticsData = await resAnalytics.json();
         setAnalytics(analyticsData);
 
@@ -60,11 +68,22 @@ const EcosystemAnalytics = () => {
         const doctorsData = await resDoctors.json();
         setVerifiedClinicians(doctorsData.length);
 
-        const resPerf = await fetch("http://localhost:5000/api/admin/clinician-performance");
+        const resPerf = await fetch("http://localhost:5000/api/admin/clinician-performance",{
+          headers: {
+            'content-type' : 'application/json',
+            authorization : `Bearer ${tokenData?.token}`
+          }
+        });
         const perfData = await resPerf.json();
         setPerformanceData(perfData);
 
-        const resTime = await fetch("http://localhost:5000/api/admin/appointment-timeline");
+        
+        const resTime = await fetch("http://localhost:5000/api/admin/appointment-timeline",{
+          headers: {
+            'content-type' : 'application/json',
+            authorization : `Bearer ${tokenData?.token}`
+          }
+        });
         const timeData = await resTime.json();
         setTimelineData(timeData);
 
