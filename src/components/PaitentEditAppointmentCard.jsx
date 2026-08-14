@@ -13,6 +13,7 @@ import {
 } from "@heroui/react";
 import { FiEdit3 } from "react-icons/fi";
 import toast from "react-hot-toast";
+import { authClient } from "@/lib/auth-client";
 
 const PaitentEditAppointmntCard = ({ appointment, onUpdateSuccess }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,10 +31,15 @@ const PaitentEditAppointmntCard = ({ appointment, onUpdateSuccess }) => {
     setLoading(true);
 
     try {
+      
+      const {data:tokenData} = await authClient.token()
+
       const res = await fetch(`http://localhost:5000/api/bookings/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          authorization: `Bearer ${tokenData?.token}`
+    
         },
         body: JSON.stringify(editFormData),
       });

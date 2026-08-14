@@ -42,7 +42,14 @@ const FeedbackReviews = () => {
 
   const fetchReviews = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/reviews");
+
+      const {data:tokenData} = await authClient.token()
+
+      const res = await fetch("http://localhost:5000/api/reviews",{
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${tokenData?.token}`
+        }});
       const data = await res.json();
       if (Array.isArray(data)) setReviews(data);
     } catch (err) {
@@ -67,9 +74,13 @@ const FeedbackReviews = () => {
         comment,
       };
 
+      const {data:tokenData} = await authClient.token()
+
       const res = await fetch("http://localhost:5000/api/reviews", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+          authorization: `Bearer ${tokenData?.token}`
+         },
         body: JSON.stringify(reviewData),
       });
 
@@ -94,11 +105,16 @@ const FeedbackReviews = () => {
   const handleDeleteReview = async (reviewId) => {
     if (window.confirm("Are you sure you want to delete this review?")) {
       try {
+        const { data: tokenData } = await authClient.token();
         const res = await fetch(
           `http://localhost:5000/api/reviews/${reviewId}`,
           {
             method: "DELETE",
+            headers: {
+              authorization: `Bearer ${tokenData?.token}`
+            }
           },
+          
         );
         if (res.ok) {
           setReviews(reviews.filter((rev) => rev._id !== reviewId));
@@ -142,7 +158,7 @@ const FeedbackReviews = () => {
                     </span>
                     <h3 className="text-lg font-bold">Dr. {item.doctorName}</h3>
                     <p className="text-sm text-zinc-400">
-                      Appointment Date: {item.date || "N/A"}
+                      Appointment Date: {item.date }
                     </p>
                   </div>
                 </div>

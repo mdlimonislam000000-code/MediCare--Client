@@ -5,6 +5,7 @@ import { useEffect, useState, Suspense } from "react";
 import { FiTrash2, FiUser } from "react-icons/fi";
 import { authClient } from "@/lib/auth-client";
 import ViewPrescription from "@/components/ViewPrescription";
+import toast from "react-hot-toast";
 
 const AppointmentsContent = () => {
   const searchParams = useSearchParams();
@@ -20,20 +21,30 @@ const AppointmentsContent = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [loadingAppointments, setLoadingAppointments] = useState(true);
 
+
   useEffect(() => {
     if (success === "true" && sessionId && !saved) {
       const saveBookingToDB = async () => {
         try {
-          setSaving(true);
-          const res = await fetch(`http://localhost:5000/api/verify-payment?session_id=${sessionId}`);
+          setSaving(s => true);
+          const { data: tokenData } = await authClient.token();
+          const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
+
+          const res = await fetch(`http://localhost:5000/api/verify-payment?session_id=${sessionId}`, {
+            headers: {
+              authorization: `Bearer ${token}`
+            }
+          });
           const data = await res.json();
 
           if (data.success) {
             setSaved(true);
+            toast.success("Payment Successful & Appointment Confirmed!");
             if (userId) fetchAppointments(userId);
           }
         } catch (error) {
           console.error("Failed to save booking:", error);
+          toast.error("Failed to verify payment.");
         } finally {
           setSaving(false);
         }
@@ -43,9 +54,17 @@ const AppointmentsContent = () => {
     }
   }, [success, sessionId, saved, userId]);
 
+
   const fetchPrescriptions = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/prescriptions");
+      const { data: tokenData } = await authClient.token();
+      const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
+
+      const res = await fetch("http://localhost:5000/api/prescriptions", {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      });
       const data = await res.json();
       if (Array.isArray(data)) {
         setPrescriptions(data);
@@ -55,10 +74,18 @@ const AppointmentsContent = () => {
     }
   };
 
+
   const fetchAppointments = async (currentUserId) => {
     try {
       setLoadingAppointments(true);
-      const res = await fetch(`http://localhost:5000/api/bookings/user/${currentUserId}`);
+      const { data: tokenData } = await authClient.token();
+      const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
+
+      const res = await fetch(`http://localhost:5000/api/bookings/user/${currentUserId}`, {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      });
       const data = await res.json();
       
       if (Array.isArray(data)) {
@@ -80,18 +107,30 @@ const AppointmentsContent = () => {
     }
   }, [userId]);
 
+
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this appointment?")) {
       try {
+        const { data: tokenData } = await authClient.token();
+        const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
+
         const res = await fetch(`http://localhost:5000/api/bookings/${id}`, {
           method: "DELETE",
+          headers: {
+            authorization: `Bearer ${token}`
+          }
         });
         const data = await res.json();
+        
         if (data.deletedCount > 0 || data.success) {
           setAppointments(appointments.filter((item) => (item._id || item.id) !== id));
+          toast.success("Appointment deleted successfully!");
+        } else {
+          toast.error("Failed to delete appointment.");
         }
       } catch (error) {
         console.error("Failed to delete appointment:", error);
+        toast.error("Something went wrong!");
       }
     }
   };
@@ -128,7 +167,7 @@ const AppointmentsContent = () => {
           </div>
         ) : appointments.length > 0 ? (
           appointments.map((item, index) => {
-            const itemId = item._id ? item._id.toString() : index.toString();
+            const itemId = item._id ? item._id.toString() : (item.id ? item.id.toString() : index.toString());
             
             const matchedPrescription = prescriptions.find((p) => {
               const pBookingId = p.bookingId ? p.bookingId.toString() : "";
@@ -167,14 +206,13 @@ const AppointmentsContent = () => {
                   </p>
                 </div>
 
-
                 <div className="flex items-center gap-3 w-full md:w-auto justify-end">
                   {matchedPrescription ? (
                     <ViewPrescription prescriptionData={matchedPrescription} />
                   ) : (
                     <button 
-                      onClick={() => handleDelete(item._id)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl hover:bg-rose-500/20 transition-all shadow-sm"
+                      onClick={() => handleDelete(item._id || item.id)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl hover:bg-rose-500/20 transition-all shadow-sm cursor-pointer"
                     >
                       <FiTrash2 className="text-base" /> 
                       Delete

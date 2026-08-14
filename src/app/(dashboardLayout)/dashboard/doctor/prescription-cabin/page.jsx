@@ -84,7 +84,7 @@ const PrescriptionCabin = () => {
     const prescriptionData = {
       bookingId: bookingId || "",
       patientId: patientId || "",
-      doctorId: currentDoctorId || "", // <--- এখানে ডক্টরের আইডি যুক্ত করা হলো
+      doctorId: currentDoctorId || "", 
       patientEmail: patientData.email !== "N/A" ? patientData.email : "",
       patient: patientData,
       diagnosis,
