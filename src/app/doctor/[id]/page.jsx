@@ -2,6 +2,11 @@ import DoctorsDetails from "@/components/DoctorsDetails";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
+export const metadata = {
+  title: "Doctor Details - MediCare Connect",
+  description: "Manage your appointments, health history, and profile.",
+};
+
 const DoctorDetailsPage = async ({ params }) => {
   const { id } = await params;
 
