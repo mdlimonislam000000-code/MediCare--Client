@@ -71,7 +71,7 @@ const DoctorEdtiPost = ({ postData, onUpdateSuccess }) => {
             const token = typeof tokenData === 'string' ? tokenData : tokenData?.token;
             
             const response = await fetch(`http://localhost:5000/api/doctor-posts/${postId}`, {
-                method: 'PATCH', // ব্যাকএন্ড রাউটের সাথে মিলিয়ে PATCH করা হয়েছে
+                method: 'PUT', // অথবা আপনার ব্যাকএন্ড অনুযায়ী PATCH ব্যবহার করতে পারেন
                 headers: {
                     'Content-Type': 'application/json',
                     authorization: `Bearer ${token}`,
@@ -81,7 +81,7 @@ const DoctorEdtiPost = ({ postData, onUpdateSuccess }) => {
             
             const result = await response.json();
             
-            if (response.ok || result.success || result.modifiedCount > 0 || result.acknowledged) {
+            if (response.ok || result.success) {
                 toast.success('Doctor post updated successfully!');
                 
                 // প্যারেন্ট কম্পোনেন্টকে জানিয়ে দেওয়া যেন ডেটা রিফেচ ও মডাল বন্ধ হয়
@@ -89,7 +89,7 @@ const DoctorEdtiPost = ({ postData, onUpdateSuccess }) => {
                     onUpdateSuccess();
                 }
             } else {
-                toast.error(result.message || 'Failed to update post.');
+                toast.error('Failed to update post.');
             }
         } catch (error) {
             console.error("Error updating form:", error);

@@ -3,16 +3,18 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Surface } from "@heroui/react";
 import toast from "react-hot-toast";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const DoctorEditProfile = ({ doctorData, user, onUpdateSuccess }) => {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
-    name: '',         
-    email: '',         
-    image: '',         
-    doctorName: '',    
+    name: '',        
+    email: '',        
+    image: '',        
     specialty: '',
     qualifications: '',
     hospitalName: '',
@@ -28,8 +30,7 @@ const DoctorEditProfile = ({ doctorData, user, onUpdateSuccess }) => {
       setFormData({
         name: user?.name || doctorData?.name || '',
         email: user?.email || doctorData?.email || '',
-        image: user?.image || doctorData?.image || '',
-        doctorName: doctorData?.name || user?.name || '',
+        image: doctorData?.image || user?.image || '',
         specialty: doctorData?.specialty === 'Specialist' || doctorData?.specialty === 'Not Provided' ? '' : doctorData?.specialty || '',
         qualifications: doctorData?.degree === 'MBBS' || doctorData?.degree === 'Not Provided' ? '' : doctorData?.degree || '',
         hospitalName: doctorData?.hospital === 'Hospital Name' || doctorData?.hospital === 'Not Provided' ? '' : doctorData?.hospital || '',
@@ -54,37 +55,52 @@ const DoctorEditProfile = ({ doctorData, user, onUpdateSuccess }) => {
     const userId = user?.id || user?._id;
     const userEmail = user?.email;
 
-    const userInfoData = {
-      name: formData.name,
-      email: formData.email,
-      image: formData.image,
-    };
-
-    const doctorPostData = {
-      userId: userId,
-      email: userEmail,
-      doctorName: formData.doctorName || formData.name,
-      specialty: formData.specialty,
-      qualifications: formData.qualifications,
-      hospitalName: formData.hospitalName,
-      experience: formData.experience,
-      consultationFee: formData.consultationFee,
-      phone: formData.phone,
-      chamberAddress: formData.chamberAddress,
-      content: formData.content,
-      image: formData.image,
-    };
-
     try {
+      const responseData = await authClient.token();
+      const token = responseData?.data?.token || responseData?.token || responseData;
+
+      if (!token || typeof token !== 'string') {
+        toast.error("Authentication token not found or invalid. Please login again.");
+        setLoading(false);
+        return;
+      }
+
+      const userInfoData = {
+        name: formData.name,
+        email: formData.email,
+        image: formData.image,
+      };
+
+      const doctorPostData = {
+        userId: userId,
+        email: userEmail,
+        doctorName: formData.name,
+        specialty: formData.specialty,
+        qualifications: formData.qualifications,
+        hospitalName: formData.hospitalName,
+        experience: formData.experience,
+        consultationFee: formData.consultationFee,
+        phone: formData.phone,
+        chamberAddress: formData.chamberAddress,
+        content: formData.content,
+        imageUrl: formData.image,
+      };
+
       const [userRes, postRes] = await Promise.all([
         fetch(`http://localhost:5000/api/users/${userId}`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            authorization: `Bearer ${token}`
+          },
           body: JSON.stringify(userInfoData),
         }),
         fetch(`http://localhost:5000/api/doctor-posts/${userId}`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            authorization: `Bearer ${token}`
+          },
           body: JSON.stringify(doctorPostData),
         })
       ]);
@@ -95,6 +111,9 @@ const DoctorEditProfile = ({ doctorData, user, onUpdateSuccess }) => {
       if (userRes.ok || postRes.ok || userResult.acknowledged || postResult.acknowledged) {
         toast.success("Profile updated successfully!");
         setIsOpen(false);
+        
+        router.refresh();
+
         if (onUpdateSuccess) {
           onUpdateSuccess();
         } else {
@@ -113,35 +132,35 @@ const DoctorEditProfile = ({ doctorData, user, onUpdateSuccess }) => {
 
   return (
     <div>
-      <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
-        <button 
-          type="button"
-          onClick={() => setIsOpen(true)}
-          className="btn btn-primary px-7 btn-sm sm:btn-md shadow-md hover:scale-105 transition-all"
-        >
-          Edit Profile
-        </button>
+      <Button 
+        onPress={() => setIsOpen(true)}
+        className="bg-primary text-primary-foreground px-7 shadow-md hover:scale-105 transition-all cursor-pointer"
+      >
+        Edit Profile
+      </Button>
 
+      <Modal isOpen={isOpen} onOpenChange={setIsOpen} placement="center">
         <Modal.Backdrop>
-          <Modal.Container placement="auto">
-            <Modal.Dialog className="sm:max-w-xl">
-              <Modal.CloseTrigger />
-              <Modal.Header>
-                <Modal.Heading>Edit Doctor Profile</Modal.Heading>
-                <p className="mt-1.5 text-sm leading-5 text-muted">
+          <Modal.Container>
+            <Modal.Dialog className="sm:max-w-xl bg-white dark:bg-zinc-900 shadow-2xl rounded-2xl border border-zinc-200 dark:border-zinc-800 p-0 overflow-hidden">
+              
+              <Modal.Header className="border-b dark:border-zinc-800 px-6 py-4 flex flex-col gap-1">
+                <h3 className="text-lg font-bold text-zinc-900 dark:text-white">Edit Doctor Profile</h3>
+                <p className="text-xs text-zinc-500 mt-0.5">
                   Update your account info and professional details below.
                 </p>
               </Modal.Header>
+
               <Modal.Body className="p-6 max-h-[70vh] overflow-y-auto">
-                <Surface variant="default">
-                  <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <Surface variant="default" className="bg-transparent shadow-none p-0">
+                  <form id="edit-doctor-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
                     
                     <div className="border-b border-base-200 pb-3 mb-2">
                       <p className="text-sm font-bold text-primary mb-3">Basic Account Info</p>
                       
                       <div className="flex flex-col gap-4">
                         <div className="flex flex-col gap-1.5">
-                          <label className="text-sm font-medium">User Name</label>
+                          <label className="text-sm font-medium">Full Name</label>
                           <input 
                             type="text"
                             name="name"
@@ -182,18 +201,6 @@ const DoctorEditProfile = ({ doctorData, user, onUpdateSuccess }) => {
                       <p className="text-sm font-bold text-primary mb-3">Professional & Chamber Info</p>
                       
                       <div className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-1.5">
-                          <label className="text-sm font-medium">Doctor Display Name</label>
-                          <input 
-                            type="text"
-                            name="doctorName"
-                            placeholder="Enter doctor display name" 
-                            value={formData.doctorName}
-                            onChange={handleChange}
-                            className="input input-bordered w-full"
-                          />
-                        </div>
-
                         <div className="flex flex-col gap-1.5">
                           <label className="text-sm font-medium">Specialty</label>
                           <input 
@@ -292,18 +299,19 @@ const DoctorEditProfile = ({ doctorData, user, onUpdateSuccess }) => {
                       </div>
                     </div>
 
-                    <div className="flex justify-end gap-3 mt-4">
-                      <Button type="button" variant="secondary" onClick={() => setIsOpen(false)}>
-                        Cancel
-                      </Button>
-                      <Button type="submit" disabled={loading}>
-                        {loading ? "Saving..." : "Save Changes"}
-                      </Button>
-                    </div>
-
                   </form>
                 </Surface>
               </Modal.Body>
+
+              <Modal.Footer className="border-t dark:border-zinc-800 px-6 py-4 flex justify-end gap-3 bg-zinc-50/50 dark:bg-zinc-900/50">
+                <Button variant="secondary" onPress={() => setIsOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" form="edit-doctor-form" disabled={loading} className="bg-primary text-primary-foreground">
+                  {loading ? "Saving..." : "Save Changes"}
+                </Button>
+              </Modal.Footer>
+
             </Modal.Dialog>
           </Modal.Container>
         </Modal.Backdrop>

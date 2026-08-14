@@ -39,7 +39,7 @@ export async function GET(request) {
        const { token } = await auth.api.getToken({
           headers: await headers(),
         });
-      console.log(token, 'booking token')
+      // console.log(token, 'booking token')
 
       const backendRes = await fetch("http://localhost:5000/api/bookings", {
         method: "POST",

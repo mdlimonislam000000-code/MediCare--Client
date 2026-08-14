@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import { 
   HiOutlineUser, 
@@ -18,13 +18,19 @@ const PatientProfile = () => {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
-
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [name, setName] = useState(user?.name );
-  const [email, setEmail] = useState(user?.email );
-  const [image, setImage] = useState(user?.image );
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [image, setImage] = useState("");
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (user) {
+      setName(user.name || "");
+      setEmail(user.email || "");
+      setImage(user.image || "");
+    }
+  }, [user]);
 
   if (isPending) {
     return (
@@ -34,30 +40,34 @@ const PatientProfile = () => {
     );
   }
 
-
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const userId = user?.id || user?._id;
-
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+      // Better Auth এর বিল্ট-ইন আপডেট মেথড (এটি ডাটাবেজ এবং সেশন কুকি একসাথে আপডেট করবে)
+      const { data, error } = await authClient.updateUser({
+        name,
+        image,
+        // email পরিবর্তন করতে চাইলে এখানে দিতে পারেন (যদি ব্যাকএন্ড এলাউ করে)
+      }, {
+        onRequest: () => {
+          setLoading(true);
         },
-        body: JSON.stringify({ name, email, image }),
+        onSuccess: () => {
+          toast.success("Profile updated successfully!");
+          setIsEditOpen(false);
+          setLoading(false);
+          // আলাদা করে রিলোড বা ফেচ করার দরকার নেই, UI অটো আপডেট হয়ে যাবে
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message || "Failed to update profile.");
+          setLoading(false);
+        }
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success("Profile updated successfully!");
-        setIsEditOpen(false);
-        window.location.reload(); 
-      } else {
-        toast.error(data.message || "Failed to update profile.");
+      if (error) {
+        toast.error(error.message || "Something went wrong.");
       }
     } catch (error) {
       console.error("Update failed:", error);
@@ -66,7 +76,6 @@ const PatientProfile = () => {
       setLoading(false);
     }
   };
-
 
   const handleDeleteAccount = async () => {
     const confirmDelete = window.confirm("Are you sure you want to delete your account? This action cannot be undone.");
@@ -93,14 +102,12 @@ const PatientProfile = () => {
 
   return (
     <div className="p-6 max-w-5xl mx-auto relative">
-
       <div className="mb-8">
         <h2 className="text-3xl font-extrabold text-base-content tracking-tight">Patient Profile</h2>
         <p className="text-base-content/60 text-sm mt-1">Manage your personal information and account settings</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      
         <div className="card bg-base-100 shadow-xl border border-base-200 p-6 text-center h-fit">
           <div className="avatar placeholder mb-4 mx-auto">
             <div className="bg-primary text-primary-content rounded-full w-24 h-24 text-3xl font-bold uppercase overflow-hidden">
@@ -118,14 +125,13 @@ const PatientProfile = () => {
           <div className="badge badge-primary badge-outline font-medium px-4 py-3 mb-4">
             Role : {user?.role || "Patient"}
           </div>
-
           
           <div className="flex flex-col gap-2.5 mt-2">
             <Button 
               onClick={() => {
-                setName(user?.name );
-                setEmail(user?.email );
-                setImage(user?.image );
+                setName(user?.name || "");
+                setEmail(user?.email || "");
+                setImage(user?.image || "");
                 setIsEditOpen(true);
               }} 
               className="btn btn-primary btn-sm w-full font-medium flex items-center justify-center gap-2"
@@ -142,7 +148,6 @@ const PatientProfile = () => {
           </div>
         </div>
 
-        {/* Detailed Information Card (Address is visible here) */}
         <div className="card bg-base-100 shadow-xl border border-base-200 p-6 md:col-span-2">
           <h3 className="text-lg font-bold text-base-content mb-6 flex items-center gap-2">
             <HiOutlineUser className="text-primary text-xl" /> Personal Information
@@ -172,7 +177,6 @@ const PatientProfile = () => {
               </span>
             </div>
 
-
             <div className="flex flex-col sm:flex-row justify-between border-b border-base-200 pb-4">
               <span className="text-sm text-base-content/60 flex items-center gap-2">
                 <HiOutlineLocationMarker /> Address
@@ -191,7 +195,6 @@ const PatientProfile = () => {
           </div>
         </div>
       </div>
-
 
       {isEditOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
@@ -225,7 +228,7 @@ const PatientProfile = () => {
                   value={email} 
                   onChange={(e) => setEmail(e.target.value)} 
                   className="input input-bordered w-full text-sm" 
-                  required 
+                  disabled 
                 />
               </div>
 

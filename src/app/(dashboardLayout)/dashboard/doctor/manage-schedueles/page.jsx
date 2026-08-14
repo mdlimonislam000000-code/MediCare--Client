@@ -48,7 +48,7 @@ const ManageSchedules = () => {
     fetch(`http://localhost:5000/api/doctor/schedule?${queryParam}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("Fetched Schedule Data:", data);
+        // console.log("Fetched Schedule Data:", data);
         if (data) {
           setWorkingDays(data.availableDays || []);
           setTimeSlots(data.availableSlots || []);
@@ -116,7 +116,7 @@ const ManageSchedules = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("Save Response:", data);
+        // console.log("Save Response:", data);
         toast.success("Schedule saved successfully!");
         setLoading(false);
         fetchSchedule(doctorEmail, doctorId);

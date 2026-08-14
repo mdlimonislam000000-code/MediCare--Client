@@ -1,7 +1,7 @@
 'use client';
 
 import { authClient } from '@/lib/auth-client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { 
     FaUserShield, 
@@ -17,13 +17,54 @@ import toast from 'react-hot-toast';
 
 const AdminProfile = () => {
     const { data: session, isPending, refetch } = authClient.useSession();
-    const user = session?.user;
+    
+    // লোকাল ইউজার স্টেট যা ব্যাকএন্ড বা সেশন থেকে ফেচ করে UI আপডেট করবে
+    const [dbUser, setDbUser] = useState(null);
+    const user = dbUser || session?.user;
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [name, setName] = useState(user?.name || '');
-    const [email, setEmail] = useState(user?.email || '');
-    const [image, setImage] = useState(user?.image || '');
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [image, setImage] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // ডাটাবেস থেকে ইউজারের লেটেস্ট ডেটা ফেচ করার ফাংশন
+    const fetchUserData = async () => {
+        try {
+            const currentUserId = session?.user?.id || session?.user?._id;
+            if (!currentUserId) return;
+
+            const { data: tokenData } = await authClient.token();
+            const response = await fetch(`http://localhost:5000/api/users/${currentUserId}`, {
+                method: 'GET',
+                headers: {
+                    authorization: `Bearer ${tokenData?.token}`
+                }
+            });
+            const data = await response.json();
+            if (response.ok && data) {
+                setDbUser(data.user || data); // ব্যাকএন্ডের স্ট্রাকচার অনুযায়ী
+            }
+        } catch (error) {
+            console.error("Failed to fetch user data:", error);
+        }
+    };
+
+    // সেশন পেলে ডেটাবেস থেকে লেটেস্ট ডেটা ফেচ করে নেব
+    useEffect(() => {
+        if (session?.user) {
+            fetchUserData();
+        }
+    }, [session]);
+
+    // ফর্মের ইনপুট ফিল্ডগুলো সিঙ্ক করার জন্য
+    useEffect(() => {
+        if (user) {
+            setName(user?.name || '');
+            setEmail(user?.email || '');
+            setImage(user?.image || '');
+        }
+    }, [user]);
 
     const handleOpenModal = () => {
         setName(user?.name || '');
@@ -45,12 +86,12 @@ const AdminProfile = () => {
                 return;
             }
 
-            const {data:tokenData} = await authClient.token()
+            const { data: tokenData } = await authClient.token();
             const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    authorization : `Bearer ${tokenData?.token}`
+                    authorization: `Bearer ${tokenData?.token}`
                 },
                 body: JSON.stringify({
                     name,
@@ -61,12 +102,17 @@ const AdminProfile = () => {
 
             const data = await response.json();
 
-            if (response.ok && (data.modifiedCount > 0 || data.matchedCount > 0)) {
+            if (response.ok) {
                 toast.success("Profile updated successfully!");
                 setIsEditModalOpen(false);
-                refetch(); 
+                
+                // সেশন রিফ্রেশ এবং ডাটাবেস থেকে নতুন ডেটা ফেচ করে UI সাথে সাথে আপডেট করা
+                if (typeof refetch === 'function') {
+                    await refetch();
+                }
+                await fetchUserData(); 
             } else {
-                toast.error(data.message || "No changes made or update failed!");
+                toast.error(data.message || "Update failed!");
             }
         } catch (err) {
             console.error(err);
@@ -183,7 +229,7 @@ const AdminProfile = () => {
                             <div>
                                 <label className="block text-xs font-semibold text-gray-600 dark:text-slate-300 mb-1">User ID / Unique Token</label>
                                 <div className="w-full px-4 py-3 rounded-xl text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-500 dark:text-slate-400 font-mono truncate">
-                                    {user?.id || "N/A"}
+                                    {user?.id || user?._id || "N/A"}
                                 </div>
                             </div>
                         </div>

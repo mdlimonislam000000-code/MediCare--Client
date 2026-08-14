@@ -24,9 +24,9 @@ const Banner = () => {
           id: doc._id || doc.id,
           name: doc.doctorName,
           specialty: doc.specialty || doc.specialization,
-          rating: doc.rating || "4.9",
-          image: doc.imageUrl || doc.profileImage || "https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=600&auto=format&fit=crop",
-          experience: doc.experience || "10+ Years Exp"
+          rating: doc.rating ,
+          image: doc.imageUrl || doc.profileImage ,
+          experience: doc.experience 
         }));
         setDoctorSlides(formattedDoctors);
         setLoading(false);

@@ -45,12 +45,12 @@ const EditPrescription = ({ isOpen, onOpenChange, prescriptionData, onUpdate }) 
   };
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-      <Modal.Backdrop variant="blur">
-        <Modal.Container placement="center">
-          <Modal.Dialog className="max-w-2xl w-full bg-white dark:bg-zinc-900 shadow-2xl rounded-2xl border border-zinc-200 dark:border-zinc-800">
-            <Modal.CloseTrigger />
-            <Modal.Header className="border-b dark:border-zinc-800 px-6 py-4">
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center">
+      <Modal.Backdrop>
+        <Modal.Container>
+          <Modal.Dialog className="max-w-2xl w-full bg-white dark:bg-zinc-900 shadow-2xl rounded-2xl border border-zinc-200 dark:border-zinc-800 p-0 overflow-hidden">
+            
+            <Modal.Header className="border-b border-zinc-200 dark:border-zinc-800 px-6 py-4 flex flex-col items-start relative">
               <Modal.Heading className="text-lg font-bold text-zinc-900 dark:text-white">
                 Edit Prescription
               </Modal.Heading>
@@ -78,7 +78,7 @@ const EditPrescription = ({ isOpen, onOpenChange, prescriptionData, onUpdate }) 
                     <button
                       type="button"
                       onClick={handleAddEditMedicineField}
-                      className="btn btn-sm bg-emerald-700 hover:bg-emerald-800 text-white flex items-center gap-1"
+                      className="btn btn-sm bg-emerald-700 hover:bg-emerald-800 text-white flex items-center gap-1 border-none cursor-pointer"
                     >
                       <HiPlus /> Add Medicine
                     </button>
@@ -114,7 +114,7 @@ const EditPrescription = ({ isOpen, onOpenChange, prescriptionData, onUpdate }) 
                         <button
                           type="button"
                           onClick={() => handleRemoveEditMedicine(index)}
-                          className="text-red-500 hover:text-red-700 p-1"
+                          className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
                         >
                           <HiTrash className="text-lg" />
                         </button>
@@ -134,10 +134,10 @@ const EditPrescription = ({ isOpen, onOpenChange, prescriptionData, onUpdate }) 
               </form>
             </Modal.Body>
 
-            <Modal.Footer className="border-t dark:border-zinc-800 px-6 py-4 flex justify-end gap-3">
+            <Modal.Footer className="border-t border-zinc-200 dark:border-zinc-800 px-6 py-4 flex justify-end gap-3 bg-zinc-50/50 dark:bg-zinc-900/50">
               <button
                 type="button"
-                className="btn btn-sm btn-outline border-zinc-300 dark:border-zinc-700"
+                className="btn btn-sm btn-outline border-zinc-300 dark:border-zinc-700 cursor-pointer"
                 onClick={() => onOpenChange(false)}
               >
                 Cancel
@@ -146,11 +146,12 @@ const EditPrescription = ({ isOpen, onOpenChange, prescriptionData, onUpdate }) 
                 type="submit"
                 form="edit-prescription-form"
                 disabled={updating}
-                className="btn btn-sm bg-emerald-700 hover:bg-emerald-800 text-white px-5"
+                className="btn btn-sm bg-emerald-700 hover:bg-emerald-800 text-white px-5 border-none cursor-pointer"
               >
                 {updating ? "Updating..." : "Save Changes"}
               </button>
             </Modal.Footer>
+
           </Modal.Dialog>
         </Modal.Container>
       </Modal.Backdrop>

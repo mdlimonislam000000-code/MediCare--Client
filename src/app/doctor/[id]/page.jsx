@@ -27,9 +27,9 @@ const DoctorDetailsPage = async ({ params }) => {
       
       doctorData = jsonResponse.data || jsonResponse; 
       
-      console.log("Fetched Doctor Data:", doctorData);
+      // console.log("Fetched Doctor Data:", doctorData);
     } else {
-      console.log("Failed to fetch, status:", res.status);
+      // console.log("Failed to fetch, status:", res.status);
     }
   } catch (error) {
     console.error("Error fetching doctor data:", error);

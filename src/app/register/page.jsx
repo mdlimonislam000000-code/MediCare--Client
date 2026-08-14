@@ -85,7 +85,7 @@ const RegisterPage = () => {
         return;
       }
 
-      console.log("Registration Successful:", resData);
+      // console.log("Registration Successful:", resData);
 
       router.push("/");
       router.refresh();

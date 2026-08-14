@@ -11,10 +11,10 @@ const BookingDoctor = ({ doctor }) => {
   const { data: session } = authClient.useSession();
   const userId = session?.user?.id || session?.user?._id;
   
-  console.log("Full Doctor Object received:", doctor);
-  console.log("Doctor ID:", doctor?._id || doctor?.id);
-  console.log("Doctor User ID (if available):", doctor?.userId);
-  console.log("User ID from session:", userId);
+  // console.log("Full Doctor Object received:", doctor);
+  // console.log("Doctor ID:", doctor?._id || doctor?.id);
+  // console.log("Doctor User ID (if available):", doctor?.userId);
+  // console.log("User ID from session:", userId);
 
   const [formDataState, setFormDataState] = useState({
     name: "",
@@ -39,8 +39,8 @@ const BookingDoctor = ({ doctor }) => {
     const currentDoctorId = doctor?._id || doctor?.id;
     const doctorUserId = doctor?.userId || "";
 
-    console.log("Submitting with Doctor ID:", currentDoctorId);
-    console.log("Submitting with Doctor User ID:", doctorUserId);
+    // console.log("Submitting with Doctor ID:", currentDoctorId);
+    // console.log("Submitting with Doctor User ID:", doctorUserId);
 
     if (!currentDoctorId) {
       toast.error("Doctor ID is missing!");
@@ -78,7 +78,7 @@ const BookingDoctor = ({ doctor }) => {
       }
 
     } catch (error) {
-      console.error("Error submitting payment:", error);
+      // console.error("Error submitting payment:", error);
       toast.error("Something went wrong!");
     } finally {
       setLoading(false);

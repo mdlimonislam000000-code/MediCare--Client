@@ -91,7 +91,7 @@ const DoctorOverview = () => {
           </div>
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              Welcome back, Dr. {user?.name || "Specialist"}!{" "}
+              Welcome back,  {user?.name || "Specialist"}!{" "}
               <span className="text-lg">👋</span>
             </h1>
             <p className="text-xs text-gray-500 dark:text-slate-400 mt-1 flex items-center gap-2">

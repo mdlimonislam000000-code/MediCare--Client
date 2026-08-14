@@ -69,8 +69,8 @@ const Navbar = () => {
   const isActive = (path) => pathname === path;
   const userRole = user?.role;
   const userId = user?.id;
-  console.log("Current User id:", userId);
-  console.log("Current User Role:", userRole);
+  // console.log("Current User id:", userId);
+  // console.log("Current User Role:", userRole);
 
 
   let dashboardPath = "/dashboard";

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { authClient } from "@/lib/auth-client";
 import {
   FaStethoscope,
@@ -24,94 +24,92 @@ const Doctorprofile = () => {
   const [doctorData, setDoctorData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchDoctorProfileData = async () => {
-      if (!user?.id && !user?._id) return;
+  // ডেটা ফেচ করার ফাংশন (cache: 'no-store' সহ যাতে ইনস্ট্যান্ট লেটেস্ট ডাটা পাওয়া যায়)
+  const fetchDoctorProfileData = useCallback(async () => {
+    if (!user?.id && !user?._id) return;
 
-      const doctorId = user.id || user._id;
+    const doctorId = user.id || user._id;
 
-      try {
-        
-        const [postsRes, bookingsRes, reviewsRes] = await Promise.all([
-          fetch("http://localhost:5000/api/doctor-posts"),
-          fetch(`http://localhost:5000/api/bookings/doctor/${doctorId}`),
-          fetch(`http://localhost:5000/api/reviews?doctorId=${doctorId}`),
-        ]);
+    try {
+      const [postsRes, bookingsRes, reviewsRes] = await Promise.all([
+        fetch("http://localhost:5000/api/doctor-posts", { cache: 'no-store' }),
+        fetch(`http://localhost:5000/api/bookings/doctor/${doctorId}`, { cache: 'no-store' }),
+        fetch(`http://localhost:5000/api/reviews?doctorId=${doctorId}`, { cache: 'no-store' }),
+      ]);
 
-        const posts = await postsRes.json();
-        const bookings = await bookingsRes.json();
-        const reviews = await reviewsRes.json();
+      const posts = await postsRes.json();
+      const bookings = await bookingsRes.json();
+      const reviews = await reviewsRes.json();
 
+      const matchedBookings = Array.isArray(bookings) ? bookings.filter(
+        (b) => b.doctorUserId === doctorId || b.doctorId === doctorId,
+      ) : [];
+      const totalPatientsCount = matchedBookings.length;
 
-        const matchedBookings = bookings.filter(
-          (b) => b.doctorUserId === doctorId || b.doctorId === doctorId,
-        );
-        const totalPatientsCount = matchedBookings.length;
+      const totalFeedbacks = Array.isArray(reviews) ? reviews.length : 0;
+      const clinicianScore =
+        totalFeedbacks > 0
+          ? (
+              reviews.reduce(
+                (acc, curr) => acc + Number(curr.rating || 0),
+                0,
+              ) / totalFeedbacks
+            ).toFixed(1)
+          : "0.0";
 
+      const matchedDoctor = Array.isArray(posts) ? posts.find(
+        (post) => post.userId === doctorId || post.email === user.email,
+      ) : null;
 
-        const totalFeedbacks = Array.isArray(reviews) ? reviews.length : 0;
-        const clinicianScore =
-          totalFeedbacks > 0
-            ? (
-                reviews.reduce(
-                  (acc, curr) => acc + Number(curr.rating || 0),
-                  0,
-                ) / totalFeedbacks
-              ).toFixed(1)
-            : "0.0";
-
-
-        const matchedDoctor = posts.find(
-          (post) => post.userId === doctorId || post.email === user.email,
-        );
-
-        if (matchedDoctor) {
-          setDoctorData({
-            specialty: matchedDoctor.specialty ,
-            degree: matchedDoctor.qualifications ,
-            hospital: matchedDoctor.hospitalName ,
-            experience: matchedDoctor.experience
-              ? `${matchedDoctor.experience} Years`
-              : "1+ Years",
-            fees: matchedDoctor.consultationFee || "0",
-            rating: clinicianScore, 
-            reviewsCount: totalFeedbacks,
-            patientsCount: totalPatientsCount > 0 ? totalPatientsCount : "0",
-            phone: matchedDoctor.phone ,
-            about:
-              matchedDoctor.content,
-            chamber:
-              matchedDoctor.chamberAddress ,
-          });
-        } else {
-          setDoctorData({
-            name: user?.name,
-            email: user?.email,
-            image: user?.image,
-            specialty: "Not Provided",
-            degree: "Not Provided",
-            hospital: "Not Provided",
-            experience: "0",
-            fees: "0",
-            rating: clinicianScore,
-            reviewsCount: totalFeedbacks,
-            patientsCount: totalPatientsCount > 0 ? totalPatientsCount : "0",
-            phone: "Not Provided",
-            about: "Please complete your doctor profile.",
-            chamber: "Not Provided",
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching doctor profile data:", error);
-      } finally {
-        setLoading(false);
+      if (matchedDoctor) {
+        setDoctorData({
+          name: matchedDoctor.doctorName || user?.name,
+          email: user?.email,
+          image: matchedDoctor.imageUrl || user?.image,
+          specialty: matchedDoctor.specialty,
+          degree: matchedDoctor.qualifications,
+          hospital: matchedDoctor.hospitalName,
+          experience: matchedDoctor.experience
+            ? `${matchedDoctor.experience} Years`
+            : "1+ Years",
+          fees: matchedDoctor.consultationFee || "0",
+          rating: clinicianScore, 
+          reviewsCount: totalFeedbacks,
+          patientsCount: totalPatientsCount > 0 ? totalPatientsCount : "0",
+          phone: matchedDoctor.phone || "Not Provided",
+          about: matchedDoctor.content || "Please complete your doctor profile.",
+          chamber: matchedDoctor.chamberAddress || "Not Provided",
+        });
+      } else {
+        setDoctorData({
+          name: user?.name,
+          email: user?.email,
+          image: user?.image,
+          specialty: "Not Provided",
+          degree: "Not Provided",
+          hospital: "Not Provided",
+          experience: "0",
+          fees: "0",
+          rating: clinicianScore,
+          reviewsCount: totalFeedbacks,
+          patientsCount: totalPatientsCount > 0 ? totalPatientsCount : "0",
+          phone: "Not Provided",
+          about: "Please complete your doctor profile.",
+          chamber: "Not Provided",
+        });
       }
-    };
+    } catch (error) {
+      console.error("Error fetching doctor profile data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
 
+  useEffect(() => {
     if (!sessionPending) {
       fetchDoctorProfileData();
     }
-  }, [user, sessionPending]);
+  }, [sessionPending, fetchDoctorProfileData]);
 
   if (sessionPending || loading) {
     return (
@@ -132,13 +130,12 @@ const Doctorprofile = () => {
 
           <div className="px-6 sm:px-10 pb-6 pt-2 relative">
             <div className="flex flex-col md:flex-row items-center md:items-end justify-between -mt-16 gap-6">
-              {/* Avatar and Basic Info */}
               <div className="flex flex-col md:flex-row items-center md:items-end gap-5 text-center md:text-left">
                 <div className="avatar">
                   <div className="w-32 h-32 rounded-2xl ring-4 ring-base-100 shadow-xl bg-base-100 overflow-hidden">
                     <img
-                      src={user?.image}
-                      alt={user?.name}
+                      src={doctorData?.image || user?.image}
+                      alt={doctorData?.name || user?.name}
                       className="object-cover w-full h-full"
                     />
                   </div>
@@ -147,7 +144,7 @@ const Doctorprofile = () => {
                 <div className="space-y-1 mb-1">
                   <div className="flex items-center justify-center md:justify-start gap-2">
                     <h1 className="text-2xl sm:text-3xl font-extrabold text-base-content">
-                      {user?.name}
+                      {doctorData?.name || user?.name}
                     </h1>
                     <MdVerified
                       className="text-primary text-2xl"
@@ -163,17 +160,16 @@ const Doctorprofile = () => {
                 </div>
               </div>
 
-
               <div className="flex gap-3 w-full md:w-auto justify-center mb-1">
                 <DoctorEditProfile
                   doctorData={doctorData}
                   user={user}
+                  onUpdateSuccess={fetchDoctorProfileData}
                 />
               </div>
             </div>
           </div>
         </div>
-
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-base-100 p-5 rounded-2xl border border-base-300 shadow-sm flex items-center gap-4">
@@ -181,9 +177,7 @@ const Doctorprofile = () => {
               <FaStethoscope />
             </div>
             <div>
-              <p className="text-xs text-base-content/60 font-medium">
-                Experience
-              </p>
+              <p className="text-xs text-base-content/60 font-medium">Experience</p>
               <h4 className="text-lg font-bold text-base-content">
                 {doctorData?.experience}
               </h4>
@@ -210,9 +204,7 @@ const Doctorprofile = () => {
               <MdOutlinePayments />
             </div>
             <div>
-              <p className="text-xs text-base-content/60 font-medium">
-                Consultation Fee
-              </p>
+              <p className="text-xs text-base-content/60 font-medium">Consultation Fee</p>
               <h4 className="text-lg font-bold text-success">
                 ৳ {doctorData?.fees}
               </h4>
@@ -224,9 +216,7 @@ const Doctorprofile = () => {
               <FaCalendarCheck />
             </div>
             <div>
-              <p className="text-xs text-base-content/60 font-medium">
-                Total Patients
-              </p>
+              <p className="text-xs text-base-content/60 font-medium">Total Patients</p>
               <h4 className="text-lg font-bold text-base-content">
                 {doctorData?.patientsCount}
               </h4>
@@ -234,14 +224,11 @@ const Doctorprofile = () => {
           </div>
         </div>
 
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-
           <div className="md:col-span-2 space-y-6">
             <div className="bg-base-100 p-8 rounded-3xl border border-base-300 shadow-sm space-y-4">
               <h3 className="text-xl font-bold text-base-content flex items-center gap-2 border-b border-base-200 pb-3">
-                <HiOutlineDocumentText className="text-primary text-2xl" />{" "}
-                About Doctor
+                <HiOutlineDocumentText className="text-primary text-2xl" /> About Doctor
               </h3>
               <p className="text-base-content/75 leading-relaxed text-base">
                 {doctorData?.about}
@@ -250,8 +237,7 @@ const Doctorprofile = () => {
 
             <div className="bg-base-100 p-8 rounded-3xl border border-base-300 shadow-sm space-y-4">
               <h3 className="text-xl font-bold text-base-content flex items-center gap-2 border-b border-base-200 pb-3">
-                <MdOutlineLocalHospital className="text-primary text-2xl" />{" "}
-                Workplace & Chamber
+                <MdOutlineLocalHospital className="text-primary text-2xl" /> Workplace & Chamber
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-base-content/80">
@@ -259,9 +245,7 @@ const Doctorprofile = () => {
                     <MdOutlineLocalHospital />
                   </span>
                   <div>
-                    <p className="text-xs text-base-content/50">
-                      Hospital / Institution
-                    </p>
+                    <p className="text-xs text-base-content/50">Hospital / Institution</p>
                     <p className="font-semibold text-base-content">
                       {doctorData?.hospital}
                     </p>
@@ -272,9 +256,7 @@ const Doctorprofile = () => {
                     <FaMapMarkerAlt />
                   </span>
                   <div>
-                    <p className="text-xs text-base-content/50">
-                      Chamber Address
-                    </p>
+                    <p className="text-xs text-base-content/50">Chamber Address</p>
                     <p className="font-semibold text-base-content capitalize">
                       {doctorData?.chamber}
                     </p>
@@ -283,7 +265,6 @@ const Doctorprofile = () => {
               </div>
             </div>
           </div>
-
 
           <div className="space-y-6">
             <div className="bg-base-100 p-6 rounded-3xl border border-base-300 shadow-sm space-y-5">
@@ -297,9 +278,7 @@ const Doctorprofile = () => {
                     <FaEnvelope />
                   </span>
                   <div>
-                    <p className="text-xs text-base-content/50">
-                      Email Address
-                    </p>
+                    <p className="text-xs text-base-content/50">Email Address</p>
                     <p className="font-semibold text-base-content break-all">
                       {doctorData?.email}
                     </p>
@@ -323,9 +302,7 @@ const Doctorprofile = () => {
                     <FaMapMarkerAlt />
                   </span>
                   <div>
-                    <p className="text-xs text-base-content/50">
-                      Location / Chamber
-                    </p>
+                    <p className="text-xs text-base-content/50">Location / Chamber</p>
                     <p className="font-semibold text-base-content capitalize">
                       {doctorData?.chamber}
                     </p>
@@ -335,6 +312,7 @@ const Doctorprofile = () => {
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );
