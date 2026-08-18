@@ -74,18 +74,6 @@
 
 ---
 
-## ⚙️ Environment Variables
-
-Create a `.env` file in your client and server directory and configure the following keys:
-
-```env
-NEXT_PUBLIC_API_URL=your_backend_api_url
-NEXT_PUBLIC_IMGBB_API_KEY=your_imgbb_api_key
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
-STRIPE_SECRET_KEY=your_stripe_secret_key
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
-
 
 
 

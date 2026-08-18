@@ -18,7 +18,7 @@ import { HiOutlineDocumentText } from "react-icons/hi";
 import DoctorEditProfile from "@/components/DoctorEditProfile";
 
 const DoctorProfilePage = () => {
-      const { data: session, isPending: sessionPending } = authClient.useSession();
+  const { data: session, isPending: sessionPending } = authClient.useSession();
   const user = session?.user;
 
   const [doctorData, setDoctorData] = useState(null);
@@ -117,6 +117,7 @@ const DoctorProfilePage = () => {
       </div>
     );
   }
+
   return (
     <div className="min-h-screen bg-base-200/60 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-8">
@@ -169,53 +170,53 @@ const DoctorProfilePage = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-base-100 p-5 rounded-2xl border border-base-300 shadow-sm flex items-center gap-4">
-            <div className="p-4 bg-primary/10 text-primary rounded-xl text-2xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-base-100 p-4 sm:p-5 rounded-2xl border border-base-300 shadow-sm flex items-center gap-4">
+            <div className="p-3.5 sm:p-4 bg-primary/10 text-primary rounded-xl text-xl sm:text-2xl shrink-0">
               <FaStethoscope />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-xs text-base-content/60 font-medium">Experience</p>
-              <h4 className="text-lg font-bold text-base-content">
+              <h4 className="text-base sm:text-lg font-bold text-base-content truncate">
                 {doctorData?.experience}
               </h4>
             </div>
           </div>
 
-          <div className="bg-base-100 p-5 rounded-2xl border border-base-300 shadow-sm flex items-center gap-4">
-            <div className="p-4 bg-warning/10 text-warning rounded-xl text-2xl">
+          <div className="bg-base-100 p-4 sm:p-5 rounded-2xl border border-base-300 shadow-sm flex items-center gap-4">
+            <div className="p-3.5 sm:p-4 bg-warning/10 text-warning rounded-xl text-xl sm:text-2xl shrink-0">
               <FaStar />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-xs text-base-content/60 font-medium">Rating</p>
-              <h4 className="text-lg font-bold text-base-content">
+              <h4 className="text-base sm:text-lg font-bold text-base-content truncate">
                 {doctorData?.rating}/5{" "}
-                <span className="text-xs text-base-content/50">
+                <span className="text-[11px] sm:text-xs text-base-content/50">
                   ({doctorData?.reviewsCount})
                 </span>
               </h4>
             </div>
           </div>
 
-          <div className="bg-base-100 p-5 rounded-2xl border border-base-300 shadow-sm flex items-center gap-4">
-            <div className="p-4 bg-success/10 text-success rounded-xl text-2xl">
+          <div className="bg-base-100 p-4 sm:p-5 rounded-2xl border border-base-300 shadow-sm flex items-center gap-4">
+            <div className="p-3.5 sm:p-4 bg-success/10 text-success rounded-xl text-xl sm:text-2xl shrink-0">
               <MdOutlinePayments />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-xs text-base-content/60 font-medium">Consultation Fee</p>
-              <h4 className="text-lg font-bold text-success">
+              <h4 className="text-base sm:text-lg font-bold text-success truncate">
                 ৳ {doctorData?.fees}
               </h4>
             </div>
           </div>
 
-          <div className="bg-base-100 p-5 rounded-2xl border border-base-300 shadow-sm flex items-center gap-4">
-            <div className="p-4 bg-info/10 text-info rounded-xl text-2xl">
+          <div className="bg-base-100 p-4 sm:p-5 rounded-2xl border border-base-300 shadow-sm flex items-center gap-4">
+            <div className="p-3.5 sm:p-4 bg-info/10 text-info rounded-xl text-xl sm:text-2xl shrink-0">
               <FaCalendarCheck />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-xs text-base-content/60 font-medium">Total Patients</p>
-              <h4 className="text-lg font-bold text-base-content">
+              <h4 className="text-base sm:text-lg font-bold text-base-content truncate">
                 {doctorData?.patientsCount}
               </h4>
             </div>
