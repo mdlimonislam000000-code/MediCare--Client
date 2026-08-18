@@ -185,7 +185,6 @@ const DoctorPostPage = () => {
                 </div>
             )}
 
-            {/* Modal for Adding Post */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 overflow-y-auto">
                     <div className="relative w-full max-w-3xl my-8 p-6 md:p-8 bg-gray-900 text-white shadow-2xl rounded-2xl border border-gray-700 max-h-[90vh] overflow-y-auto">
@@ -206,7 +205,6 @@ const DoctorPostPage = () => {
                 </div>
             )}
 
-            {/* Modal for Editing Post */}
             {isEditModalOpen && (
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 overflow-y-auto">
                     <div className="relative w-full max-w-3xl my-8 p-6 md:p-8 bg-gray-900 text-white shadow-2xl rounded-2xl border border-gray-700 max-h-[90vh] overflow-y-auto">

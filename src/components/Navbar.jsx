@@ -31,6 +31,7 @@ const Navbar = () => {
   
   const [theme, setTheme] = useState("light");
   const dropdownRef = useRef(null);
+  const mobileMenuRef = useRef(null); 
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") || "light";
@@ -47,8 +48,13 @@ const Navbar = () => {
 
   useEffect(() => {
     function handleClickOutside(event) {
+
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
+      }
+
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        setMobileMenuOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -68,10 +74,6 @@ const Navbar = () => {
 
   const isActive = (path) => pathname === path;
   const userRole = user?.role;
-  const userId = user?.id;
-  // console.log("Current User id:", userId);
-  // console.log("Current User Role:", userRole);
-
 
   let dashboardPath = "/dashboard";
   if (userRole === "admin") {
@@ -160,7 +162,7 @@ const Navbar = () => {
     <header className="sticky top-0 z-50 w-full border-b border-blue-500/20 bg-background/80 backdrop-blur-md shadow-md transition-colors duration-300">
       <div className="max-w-7xl mx-auto flex items-center justify-between py-3.5 px-4 md:px-8">
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3" ref={mobileMenuRef}>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="lg:hidden p-2.5 rounded-xl hover:bg-blue-500/10 text-foreground transition"
@@ -182,6 +184,33 @@ const Navbar = () => {
               </span>
             </div>
           </Link>
+
+          {mobileMenuOpen && (
+            <div className="lg:hidden absolute top-full left-0 w-3/4 sm:w-1/2 bg-background/95 backdrop-blur-2xl border-r border-b border-blue-500/20 shadow-2xl py-6 px-6 rounded-br-3xl animate-in fade-in slide-in-from-left duration-200">
+              <ul className="flex flex-col gap-2">
+                {navLinks}
+              </ul>
+
+              {!isPending && !user && (
+                <div className="flex flex-col gap-3 mt-6 pt-6 border-t border-blue-500/20">
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full py-3 text-sm font-bold rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all text-center shadow-sm"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full py-3 text-sm font-bold rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30 text-center hover:opacity-95 transition-all"
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <nav className="hidden lg:flex items-center">
@@ -209,7 +238,7 @@ const Navbar = () => {
           )}
 
           {!isPending && !user && (
-            <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-3">
               <Link
                 href="/login"
                 className="px-5 py-2.5 text-xs font-bold rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm"
@@ -281,14 +310,6 @@ const Navbar = () => {
           )}
         </div>
       </div>
-
-      {mobileMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 w-full bg-background/95 backdrop-blur-2xl border-b border-blue-500/20 shadow-2xl py-4 px-6 animate-in fade-in slide-in-from-top-2 duration-200">
-          <ul className="flex flex-col gap-2">
-            {navLinks}
-          </ul>
-        </div>
-      )}
     </header>
   );
 };

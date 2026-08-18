@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { 
   FaUserInjured, FaUserMd, FaCalendarCheck, FaDollarSign 
 } from "react-icons/fa";
+import { FaBangladeshiTakaSign } from "react-icons/fa6";
 import { 
   BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer 
 } from "recharts";
@@ -172,12 +173,12 @@ const EcosystemAnalyticsPage = () => {
             <p className="text-xs font-semibold text-gray-400 uppercase">
               Gross Co-Pays
             </p>
-            <h3 className="text-2xl font-bold mt-1 text-gray-900 dark:text-white">
-              ${analytics.grossCoPays}
+            <h3 className="text-2xl flex gap-2 font-bold mt-1 text-gray-900 dark:text-white">
+              <FaBangladeshiTakaSign />{analytics.grossCoPays}
             </h3>
           </div>
           <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-lg">
-            <FaDollarSign />
+            <FaBangladeshiTakaSign />
           </div>
         </div>
       </div>

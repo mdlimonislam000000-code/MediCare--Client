@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { TbCurrencyTaka } from "react-icons/tb";
 
 const ApproveDoctorPage = () => {
       const [doctors, setDoctors] = useState([]);
@@ -56,7 +57,7 @@ const ApproveDoctorPage = () => {
 
               <div className="text-[11px] text-gray-500 dark:text-slate-400 space-y-1">
                 <p><span className="font-semibold">Hospital:</span> {doc.hospitalName}</p>
-                <p><span className="font-semibold">Fee:</span> ${doc.consultationFee}</p>
+                <p><span className="font-semibold">Fee:</span> <span className="flex gap-2"><TbCurrencyTaka />{doc.consultationFee}</span></p>
                 <p><span className="font-semibold">Chamber:</span> {doc.chamberAddress}</p>
               </div>
 
